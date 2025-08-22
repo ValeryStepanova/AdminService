@@ -3,3 +3,6 @@ spring:
         name: AdminService
     profiles:
         active: docker
+
+server:
+    port: 8081
