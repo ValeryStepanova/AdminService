@@ -1,0 +1,5 @@
+spring:
+    application:
+        name: AdminService
+    profiles:
+        active: docker
