@@ -1,23 +1,19 @@
-package com.itechart.springsecuritydemo.filters;
+package com.example.AdminService.config;
 
-import com.itechart.springsecuritydemo.dto.RegisterRequest;
-import com.itechart.springsecuritydemo.entity.Role;
-import com.itechart.springsecuritydemo.entity.User;
-import com.itechart.springsecuritydemo.repository.UserRepository;
-import com.itechart.springsecuritydemo.service.UserService;
+import com.example.AdminService.entities.User;
+import com.example.AdminService.entities.enums.Role;
+import com.example.AdminService.repositories.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.io.IOException;
 import java.util.List;

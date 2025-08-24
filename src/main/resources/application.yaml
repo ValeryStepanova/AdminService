@@ -3,6 +3,10 @@ spring:
         name: AdminService
     profiles:
         active: docker
-
+    security:
+        oauth2:
+            resourceserver:
+                jwt:
+                    jwk-set-uri: http://keycloak:8080/realms/examin-ai/protocol/openid-connect/certs
 server:
     port: 8081
