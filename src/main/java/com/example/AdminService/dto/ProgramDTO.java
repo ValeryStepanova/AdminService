@@ -1,5 +1,6 @@
 package com.example.AdminService.dto;
 
+import com.example.AdminService.dto.request.CourseCreateRequestDTO;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -8,7 +9,7 @@ import java.time.LocalDateTime;
 public class ProgramDTO {
     private Long id;
 
-    private CourseDTO course;
+    private CourseCreateRequestDTO course;
 
     private Long expertId;
 

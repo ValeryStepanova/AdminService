@@ -22,6 +22,7 @@ public class Task {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "program_id", nullable = false, updatable = false)
+    @ToString.Exclude
     private Program program;
 
     @Column(name = "mentor_id", nullable = false)
