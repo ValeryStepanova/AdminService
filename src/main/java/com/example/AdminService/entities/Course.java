@@ -23,19 +23,25 @@ public class Course {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "description", nullable = false)
+    private String description;
+
     @Column(name = "supervisor_id", nullable = false)
     private Long supervisorId;
+
+    @Column(name = "mentor_id", nullable = false)
+    private Long mentorId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private CourseStatus status;
 
-    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "created_at", nullable = false, updatable = false, insertable = false)
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "deleted_at", updatable = false)
+    @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 }

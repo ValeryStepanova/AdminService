@@ -1,18 +1,19 @@
 package com.example.AdminService.mapper;
 
-import com.example.AdminService.dto.CourseDTO;
+import com.example.AdminService.dto.request.CourseCreateRequestDTO;
+import com.example.AdminService.dto.response.CourseCreateResponseDTO;
+import com.example.AdminService.dto.response.CourseResponseDTO;
 import com.example.AdminService.entities.Course;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.MappingConstants;
 
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CourseMapper {
-    CourseMapper INSTANCE = Mappers.getMapper(CourseMapper.class);
+    CourseCreateResponseDTO toDto(Course course);
+    @Mapping(source = "name", target = "name")
+    @Mapping(source = "description", target = "description")
+    Course toEntity(CourseCreateRequestDTO courseCreateRequestDTO);
 
-    @Mapping(target = "id")
-    CourseDTO toDto(Course course);
-    @Mapping(target = "id")
-    Course toEntity(CourseDTO courseDTO);
-
+    CourseResponseDTO toResponseDto(Course course);
 }
