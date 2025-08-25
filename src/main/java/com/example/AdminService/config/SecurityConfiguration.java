@@ -25,8 +25,8 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/roles/**").authenticated()
-                        .anyRequest().authenticated())
+                        .anyRequest().authenticated()
+                )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
                 .addFilterAfter(keycloakUserSyncFilter, BearerTokenAuthenticationFilter.class)

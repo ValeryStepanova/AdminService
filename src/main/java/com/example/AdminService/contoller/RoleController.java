@@ -1,10 +1,8 @@
-package com.example.AdminService.controllers;
+package com.example.AdminService.contoller;
 
 import com.example.AdminService.dto.AssignRoleRequest;
 import com.example.AdminService.dto.UserReadDto;
 import com.example.AdminService.services.SupervisorService;
-import jakarta.persistence.Converter;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +19,11 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/roles")
+@RequestMapping("api/roles")
 public class RoleController {
 
     private final SupervisorService supervisorService;
-    @PutMapping("/experts")
+    @PutMapping("/assign")
     @PreAuthorize("hasAuthority('ROLE_SUPERVISOR')")
     public List<UserReadDto> assignExperts(@RequestBody AssignRoleRequest assignRoleRequest){
         List<UserReadDto> users = new ArrayList<>();
