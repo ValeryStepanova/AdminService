@@ -28,7 +28,7 @@ services:
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: pass
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
-      JWK_SET_URI: ${JWK_SET_URI}
+      JWK_SET_URI: ${JWK_SET_URI:-http://keycloak:8080/realms/examin-ai/protocol/openid-connect/certs}
       KEYCLOAK_HOST: http://keycloak:8080
     networks:
       - admin_net
