@@ -29,6 +29,9 @@ services:
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: pass
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      APPLICATION_REALM: ${APPLICATION_REALM}
+      USER_SYNC_CLIENT_ID: ${USER_SYNC_CLIENT_ID}
+      USER_SYNC_CLIENT_SECRET: ${USER_SYNC_CLIENT_SECRET}
       JWK_SET_URI: ${JWK_SET_URI}
       KEYCLOAK_HOST: http://keycloak:8080
     networks:
@@ -77,5 +80,4 @@ volumes:
 
 networks:
   admin_net:
-    driver: bridge
   keycloak_net:
