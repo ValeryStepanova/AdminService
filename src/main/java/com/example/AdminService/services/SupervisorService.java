@@ -5,7 +5,6 @@ import com.example.AdminService.entities.User;
 import com.example.AdminService.entities.enums.Role;
 import com.example.AdminService.mapper.UserMapper;
 import com.example.AdminService.repositories.UserRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +20,7 @@ public class SupervisorService {
     private final UserRepository userRepository;
 
     private final KeycloakService keycloakService;
+
     public Optional<UserReadDto> findByUUID(UUID uuid) {
         return Optional.ofNullable(UserMapper.INSTANCE.toDto(userRepository.findUserByUuid(uuid)));
     }
@@ -31,7 +31,7 @@ public class SupervisorService {
             User user = UserMapper.INSTANCE.toEntity(userReadDto);
             user.setRole(Role.valueOf(role));
             userRepository.save(user);
-            //keycloakService.updateUserRole(user.getUuid(), Role.ROLE_EXPERT.name());
+            keycloakService.updateUserRole(user.getUuid(), role);
             newExperts.add(UserMapper.INSTANCE.toDto(userRepository.findUserByUuid(user.getUuid())));
         }
         return newExperts;

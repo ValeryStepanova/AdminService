@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,7 @@ public class RoleController {
 
     private final SupervisorService supervisorService;
     @PutMapping("/experts")
+    @PreAuthorize("hasAuthority('ROLE_SUPERVISOR')")
     public List<UserReadDto> assignExperts(@RequestBody AssignRoleRequest assignRoleRequest){
         List<UserReadDto> users = new ArrayList<>();
         for (UUID uuid: assignRoleRequest.uuidList()) {

@@ -1,5 +1,6 @@
 package com.example.AdminService.services;
 
+import com.example.AdminService.config.KeycloakProperties;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.UserResource;
@@ -13,15 +14,16 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class KeycloakService {
 
-//    private final Keycloak keycloak;
-//    private final KeycloakProperties keycloakProperties;
-//    public void updateUserRole(UUID uuid, String newRoleName) {
-//        UserResource userResource = keycloak.realm(keycloakProperties.getRealm())
-//                .users().get(uuid.toString());
-//        RoleRepresentation role = keycloak.realm(keycloakProperties.getRealm())
-//                .roles().get(newRoleName).toRepresentation();
-//        userResource.roles().realmLevel().add(List.of(role));
-//
-//        System.out.println("Role '" + newRoleName + "' assigned to user: " + uuid);
-//    }
+    private final Keycloak keycloak;
+    private final KeycloakProperties keycloakProperties;
+    public void updateUserRole(UUID uuid, String newRoleName) {
+        System.out.println("KEYCLOAKSERVICE ROLE: "+newRoleName);
+        UserResource userResource = keycloak.realm(keycloakProperties.getRealm())
+                .users().get(uuid.toString());
+        RoleRepresentation role = keycloak.realm(keycloakProperties.getRealm())
+                .roles().get(newRoleName).toRepresentation();
+        userResource.roles().realmLevel().add(List.of(role));
+
+        System.out.println("Role '" + newRoleName + "' assigned to user: " + uuid);
+    }
 }
