@@ -9,6 +9,10 @@ spring:
       ddl-auto: create-drop
   liquibase:
     enabled: false
+  cloud:
+    config:
+      enabled: false
+
 keycloak:
   realm: realm-id
   server-url: http://host:8080
