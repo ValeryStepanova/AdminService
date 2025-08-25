@@ -13,7 +13,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-examin-ai" ],
     "clientRoles" : {
-      "realm-management" : [ "manage-users", "query-users", "view-users" ]
+      "realm-management" : [ "manage-users", "manage-realm", "query-users", "view-users" ]
     },
     "notBefore" : 0,
     "groups" : [ ]

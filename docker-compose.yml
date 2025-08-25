@@ -7,11 +7,12 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
     ports:
-      - "5432:5432"
+      - "5439:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata-admin-service:/var/lib/postgresql/data
     networks:
       - admin_net
+
 
   admin-service:
     build:
@@ -28,6 +29,9 @@ services:
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: pass
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      APPLICATION_REALM: ${APPLICATION_REALM}
+      USER_SYNC_CLIENT_ID: ${USER_SYNC_CLIENT_ID}
+      USER_SYNC_CLIENT_SECRET: ${USER_SYNC_CLIENT_SECRET}
       JWK_SET_URI: ${JWK_SET_URI}
       KEYCLOAK_HOST: http://keycloak:8080
     networks:
@@ -71,7 +75,7 @@ services:
       - keycloak_net
 
 volumes:
-  pgdata:
+  pgdata-admin-service:
   keycloak_pgdata_admin_service:
 
 networks:
