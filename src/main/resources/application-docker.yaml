@@ -10,8 +10,24 @@ spring:
     properties.hibernate:
       show_sql: true
       format_sql: true
+  cloud:
+    config:
+      enabled: ${CLOUD_CONFIG_ENABLED:false}
   security:
     oauth2:
       resourceserver:
         jwt:
           jwk-set-uri: ${JWK_SET_URI}
+
+keycloak:
+  realm: ${APPLICATION_REALM}
+  server-url: ${KEYCLOAK_HOST}
+  user-sync-client:
+    client-id: ${USER_SYNC_CLIENT_ID}
+    client-secret: ${USER_SYNC_CLIENT_SECRET}
+
+eureka:
+  client:
+    enabled: ${EUREKA_CLIENT_ENABLED:false}
+    service-url:
+      defaultZone: ${EUREKA_URL}

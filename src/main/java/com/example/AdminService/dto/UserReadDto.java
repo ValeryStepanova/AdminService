@@ -4,11 +4,14 @@ import com.example.AdminService.entities.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Builder;
+import lombok.Data;
+import lombok.Setter;
 import lombok.Value;
 
 import java.util.UUID;
 
 @Builder(toBuilder = true)
+@Data
 @Value
 public class UserReadDto {
     @JsonIgnore
