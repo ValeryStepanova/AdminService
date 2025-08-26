@@ -2,7 +2,7 @@ spring:
     application:
         name: AdminService
     profiles:
-        active: local
+        active: docker
 
 server:
     port: 8081
