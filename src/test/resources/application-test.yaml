@@ -9,9 +9,17 @@ spring:
       ddl-auto: create-drop
   liquibase:
     enabled: false
+  cloud:
+    config:
+      enabled: false
+
 keycloak:
   realm: realm-id
   server-url: http://host:8080
   user-sync-client:
     client-id: client-id
     client-secret: AmQ6oV3AgoZm14gBd0Si74z05o0MLrH6
+
+eureka:
+  client:
+    enabled: false

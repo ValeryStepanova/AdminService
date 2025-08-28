@@ -6,3 +6,6 @@ spring:
     password:
   liquibase:
     enabled: false
+  cloud:
+    config:
+      enabled: false
