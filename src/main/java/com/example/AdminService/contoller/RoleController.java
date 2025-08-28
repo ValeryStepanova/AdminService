@@ -1,8 +1,8 @@
 package com.example.AdminService.contoller;
 
-import com.example.AdminService.dto.AssignRoleRequest;
+import com.example.AdminService.dto.request.AssignRoleRequest;
 import com.example.AdminService.dto.UserReadDto;
-import com.example.AdminService.services.SupervisorService;
+import com.example.AdminService.service.impl.SupervisorServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,15 +22,13 @@ import java.util.UUID;
 @RequestMapping("api/roles")
 public class RoleController {
 
-    private final SupervisorService supervisorService;
+    private final SupervisorServiceImpl supervisorService;
+
     @PutMapping("/assign")
     @PreAuthorize("hasAuthority('ROLE_SUPERVISOR')")
-    public List<UserReadDto> assignExperts(@RequestBody AssignRoleRequest assignRoleRequest){
-        List<UserReadDto> users = new ArrayList<>();
-        for (UUID uuid: assignRoleRequest.uuidList()) {
-           users.add(supervisorService.findByUUID(uuid).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with uuid " + uuid + " not found")));
-        }
+    public List<UserReadDto> assignExperts(@RequestBody AssignRoleRequest assignRoleRequest) {
+        List<UserReadDto> users = supervisorService.getExistingUsers(assignRoleRequest.uuidList());
+
         return ResponseEntity.ok(supervisorService.assignRole(users, assignRoleRequest.role())).getBody();
     }
-
 }
