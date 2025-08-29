@@ -7,11 +7,10 @@ import com.example.AdminService.exception.UserNotFoundException;
 import com.example.AdminService.mapper.UserMapper;
 import com.example.AdminService.repositories.UserRepository;
 import com.example.AdminService.service.SupervisorService;
-import com.example.AdminService.service.impl.KeycloakServiceImpl;
+import com.example.AdminService.service.feign.ProfileServiceClient;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
