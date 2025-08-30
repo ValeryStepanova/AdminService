@@ -1,7 +1,7 @@
 package com.example.AdminService.config;
 
 import com.example.AdminService.entities.User;
-import com.example.AdminService.entities.enums.Role;
+import com.itechart.profileserviceapi.enums.Role;
 import com.example.AdminService.repositories.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

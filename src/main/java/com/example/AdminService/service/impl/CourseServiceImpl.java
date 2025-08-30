@@ -7,7 +7,7 @@ import com.example.AdminService.dto.response.CourseResponseDTO;
 import com.example.AdminService.entities.Course;
 import com.example.AdminService.entities.User;
 import com.example.AdminService.entities.enums.CourseStatus;
-import com.example.AdminService.entities.enums.Role;
+import com.itechart.profileserviceapi.enums.Role;
 import com.example.AdminService.exception.CourseNotFoundException;
 import com.example.AdminService.exception.CourseNameAlreadyTakenException;
 import com.example.AdminService.exception.UserNotFoundException;
