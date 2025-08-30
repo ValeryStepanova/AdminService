@@ -25,7 +25,6 @@ public class KeycloakUserSyncFilter extends OncePerRequestFilter {
 
     private final UserRepository userRepository;
 
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

@@ -20,7 +20,6 @@ public class SecurityConfiguration {
 
     private final KeycloakUserSyncFilter keycloakUserSyncFilter;
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
@@ -31,7 +30,6 @@ public class SecurityConfiguration {
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
                 .addFilterAfter(keycloakUserSyncFilter, BearerTokenAuthenticationFilter.class)
                 .build();
-
     }
 
     private JwtAuthenticationConverter jwtAuthenticationConverter() {
