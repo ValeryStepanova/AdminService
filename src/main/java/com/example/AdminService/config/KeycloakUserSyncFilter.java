@@ -8,6 +8,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -16,11 +18,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class KeycloakUserSyncFilter extends OncePerRequestFilter {
 
     private final UserRepository userRepository;
@@ -33,27 +38,24 @@ public class KeycloakUserSyncFilter extends OncePerRequestFilter {
             Jwt jwt = jwtAuth.getToken();
             String keycloakId = jwt.getSubject();
             String username = jwt.getClaim("preferred_username");
-            String email = jwt.getClaim("email");
             List<String> roles = jwt.getClaimAsStringList("roles");
 
-            String currentRole = roles.stream()
-                    .filter(role -> role.startsWith("ROLE_"))
-                    .findFirst()
-                    .orElse(null);
-
+            List<Role> currentRoles = roles.stream()
+                    .filter(role -> role!=null && role.startsWith("ROLE_"))
+                    .map(Role::valueOf)
+                    .toList();
+            log.info("CURRENT_ROLES: "+currentRoles);
             UUID uuid = UUID.fromString(keycloakId);
-
             if (!userRepository.existsUserByUuid(uuid)) {
                 User user = User.builder()
                         .uuid(uuid)
                         .username(username)
-                        .email(email)
-                        .role(Role.valueOf(currentRole))
+                        .roles(currentRoles)
                         .build();
                 userRepository.save(user);
             }
         }
-
+        log.info("USER WAS CREATE");
         filterChain.doFilter(request, response);
 
     }

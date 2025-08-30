@@ -4,6 +4,7 @@ import com.example.AdminService.entities.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -21,12 +22,11 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private UUID uuid;
-
+    @Column
     private String username;
-    @Column(name="phone")
-    private String phoneNumber;
-    private String city;
-    private String email;
+
+    @ElementCollection(targetClass = Role.class)
     @Enumerated(EnumType.STRING)
-    private Role role;
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    private List<Role> roles;
 }

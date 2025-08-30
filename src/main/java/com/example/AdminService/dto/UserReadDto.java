@@ -3,11 +3,13 @@ package com.example.AdminService.dto;
 import com.example.AdminService.entities.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Column;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Setter;
 import lombok.Value;
 
+import java.util.List;
 import java.util.UUID;
 
 @Builder(toBuilder = true)
@@ -19,9 +21,6 @@ public class UserReadDto {
     @JsonIgnore
     UUID uuid;
     String username;
-    String phoneNumber;
-    String city;
-    String email;
-    Role role;
+    List<Role> roles;
 
 }

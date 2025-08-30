@@ -9,14 +9,9 @@ import com.example.AdminService.repositories.UserRepository;
 import com.example.AdminService.service.SupervisorService;
 import com.example.AdminService.service.impl.KeycloakServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +36,9 @@ public class SupervisorServiceImpl implements SupervisorService {
         List<UserReadDto> newUsers = new ArrayList<>();
         for (UserReadDto userReadDto : users) {
             User user = UserMapper.INSTANCE.toEntity(userReadDto);
-            user.setRole(Role.valueOf(role));
+            List<Role> roles = user.getRoles();
+            roles.add(Role.valueOf(role));
+            user.setRoles(roles);
             userRepository.save(user);
             keycloakService.updateUserRole(user.getUuid(), role);
             newUsers.add(UserMapper.INSTANCE.toDto(userRepository.findUserByUuid(user.getUuid())));

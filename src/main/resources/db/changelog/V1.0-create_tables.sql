@@ -66,3 +66,14 @@ CREATE TABLE course_audit
         FOREIGN KEY (course_id) REFERENCES courses (id)
             ON DELETE CASCADE
 );
+
+CREATE TABLE audit_log (
+                           id BIGSERIAL PRIMARY KEY,
+                           entity_name VARCHAR(255) NOT NULL,
+                           entity_id BIGINT NOT NULL,
+                           old_value TEXT,
+                           new_value TEXT,
+                           operation VARCHAR(50) NOT NULL,
+                           updated_by VARCHAR(255),
+                           updated_at TIMESTAMP NOT NULL
+);

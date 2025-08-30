@@ -5,10 +5,12 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGSERIAL PRIMARY KEY,
-    uuid UUID NOT NULL UNIQUE DEFAULT gen_random_uuid(),
-    username VARCHAR(64) NOT NULL UNIQUE,
-    phone VARCHAR(64),
-    city VARCHAR(64),
-    email VARCHAR(64) NOT NULL,
-    role VARCHAR(32) NOT NULL
+    username VARCHAR(50) NOT NULL,
+    uuid UUID NOT NULL UNIQUE DEFAULT gen_random_uuid()
     );
+CREATE TABLE user_roles
+(
+    user_id BIGINT      NOT NULL,
+    roles   VARCHAR(50) NOT NULL,
+    CONSTRAINT fk_user_roles_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
