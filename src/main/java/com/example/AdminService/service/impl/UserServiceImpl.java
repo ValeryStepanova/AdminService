@@ -1,7 +1,7 @@
 package com.example.AdminService.service.impl;
 
 import com.example.AdminService.entities.User;
-import com.example.AdminService.entities.enums.Role;
+import com.itechart.profileserviceapi.enums.Role;
 import com.example.AdminService.exception.UserNotFoundException;
 import com.example.AdminService.repositories.UserRepository;
 import com.example.AdminService.service.UserService;

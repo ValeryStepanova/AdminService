@@ -1,7 +1,7 @@
 package com.example.AdminService.repositories;
 
 import com.example.AdminService.entities.User;
-import com.example.AdminService.entities.enums.Role;
+import com.itechart.profileserviceapi.enums.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

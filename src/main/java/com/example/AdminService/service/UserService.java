@@ -1,7 +1,7 @@
 package com.example.AdminService.service;
 
 import com.example.AdminService.entities.User;
-import com.example.AdminService.entities.enums.Role;
+import com.itechart.profileserviceapi.enums.Role;
 
 import javax.swing.text.html.Option;
 import java.util.Optional;

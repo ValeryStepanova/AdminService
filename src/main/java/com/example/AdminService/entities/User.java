@@ -1,6 +1,6 @@
 package com.example.AdminService.entities;
 
-import com.example.AdminService.entities.enums.Role;
+import com.itechart.profileserviceapi.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
