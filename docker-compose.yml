@@ -13,6 +13,19 @@ services:
     networks:
       - admin_net
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: examin-ai-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - messaging_net
 
   admin-service:
     build:
@@ -39,6 +52,8 @@ services:
     networks:
       - admin_net
       - keycloak_net
+      - messaging_net
+
 
   keycloak-db:
     image: postgres:15
@@ -56,7 +71,7 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.2
-    container_name: keycloak
+    container_name: keycloak-admin
     command: start-dev --import-realm
     environment:
       KC_DB: postgres
@@ -78,8 +93,10 @@ services:
 
 volumes:
   pgdata-admin-service:
+  rabbitmq-data:
   keycloak_pgdata_admin_service:
 
 networks:
+  messaging_net:
   admin_net:
   keycloak_net:
