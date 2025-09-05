@@ -32,17 +32,8 @@ public class SupervisorServiceImpl implements SupervisorService {
         return Optional.ofNullable(UserMapper.INSTANCE.toDto(userRepository.findUserByUuid(uuid)));
     }
 
+    @Override
     public List<UserReadDto> assignRole(List<UserReadDto> users, String role) {
-        List<UserReadDto> newUsers = new ArrayList<>();
-        for (UserReadDto userReadDto : users) {
-            User user = UserMapper.INSTANCE.toEntity(userReadDto);
-            List<Role> roles = user.getRoles();
-            roles.add(Role.valueOf(role));
-            user.setRoles(roles);
-            userRepository.save(user);
-            keycloakService.updateUserRole(user.getUuid(), role);
-            newUsers.add(UserMapper.INSTANCE.toDto(userRepository.findUserByUuid(user.getUuid())));
-        }
-        return newUsers;
+        return null;
     }
 }

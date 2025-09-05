@@ -1,10 +1,11 @@
 package com.example.AdminService.contoller;
 
-import com.example.AdminService.dto.request.AssignRoleRequest;
 import com.example.AdminService.dto.UserReadDto;
 import com.example.AdminService.service.impl.SupervisorServiceImpl;
+import com.itechart.profileserviceapi.api.UserClient;
+import com.itechart.profileserviceapi.dto.AssignRoleRequest;
+import com.itechart.profileserviceapi.dto.UserDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,14 +18,11 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("api/roles")
 public class RoleController {
-
-    private final SupervisorServiceImpl supervisorService;
+    private final UserClient userClient;
 
     @PutMapping("/assign")
     @PreAuthorize("hasAuthority('ROLE_SUPERVISOR')")
-    public List<UserReadDto> assignExperts(@RequestBody AssignRoleRequest assignRoleRequest) {
-        List<UserReadDto> users = supervisorService.getExistingUsers(assignRoleRequest.uuidList());
-
-        return ResponseEntity.ok(supervisorService.assignRole(users, assignRoleRequest.role())).getBody();
+    public List<UserDto> assignRoles(@RequestBody AssignRoleRequest assignRoleRequest) {
+      return userClient.assignRoles(assignRoleRequest);
     }
 }
