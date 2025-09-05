@@ -1,7 +1,5 @@
 package com.example.AdminService.contoller;
 
-import com.example.AdminService.dto.UserReadDto;
-import com.example.AdminService.service.impl.SupervisorServiceImpl;
 import com.itechart.profileserviceapi.api.UserClient;
 import com.itechart.profileserviceapi.dto.AssignRoleRequest;
 import com.itechart.profileserviceapi.dto.UserDto;
