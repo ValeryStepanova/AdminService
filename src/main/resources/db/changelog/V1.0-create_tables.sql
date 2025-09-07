@@ -94,5 +94,5 @@ CREATE TABLE course_interns
     intern_id UUID   NOT NULL
 );
 ALTER TABLE course_interns
-    ADD CONSTRAINT uq_course_student UNIQUE (course_id, intern_id_id);
+    ADD CONSTRAINT uq_course_student UNIQUE (course_id, intern_id);
 
