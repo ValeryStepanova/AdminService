@@ -1,6 +1,8 @@
 package com.example.AdminService.service.impl;
 
+import com.example.AdminService.dto.response.AssignUsersResponse;
 import com.example.AdminService.entities.User;
+import com.itechart.profileserviceapi.dto.UserIdsRequest;
 import com.itechart.profileserviceapi.enums.Role;
 import com.example.AdminService.exception.UserNotFoundException;
 import com.example.AdminService.repositories.UserRepository;

@@ -2,23 +2,26 @@ package com.example.AdminService.service.impl;
 
 import com.example.AdminService.dto.request.CourseCreateRequestDTO;
 import com.example.AdminService.dto.request.CourseUpdateRequestDTO;
+import com.example.AdminService.dto.response.AssignUsersResponse;
 import com.example.AdminService.dto.response.CourseCreateResponseDTO;
 import com.example.AdminService.dto.response.CourseResponseDTO;
 import com.example.AdminService.entities.Course;
-import com.example.AdminService.entities.User;
 import com.example.AdminService.entities.enums.CourseStatus;
+import com.example.AdminService.utils.SecurityUtils;
+import com.itechart.profileserviceapi.api.UserClient;
+import com.itechart.profileserviceapi.dto.UserDto;
+import com.itechart.profileserviceapi.dto.UserIdsRequest;
 import com.itechart.profileserviceapi.enums.Role;
 import com.example.AdminService.exception.CourseNotFoundException;
 import com.example.AdminService.exception.CourseNameAlreadyTakenException;
-import com.example.AdminService.exception.UserNotFoundException;
 import com.example.AdminService.mapper.CourseMapper;
 import com.example.AdminService.repositories.CourseRepository;
 import com.example.AdminService.service.CourseAuditService;
 import com.example.AdminService.service.CourseService;
-import com.example.AdminService.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -29,24 +32,23 @@ import java.util.*;
 @Slf4j
 public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
-    private final UserService userService;
     private final CourseMapper courseMapper;
     private final CourseAuditService audit;
+    private final UserClient userClient;
 
     @Override
     public CourseCreateResponseDTO createCourse(CourseCreateRequestDTO courseDto) {
         if (courseRepository.existsCourseByName(courseDto.getName())) {
             throw new CourseNameAlreadyTakenException("Course with name '%s' already exists".formatted(courseDto.getName()));
         }
-        if (!userService.existsByIdAndRole(courseDto.getMentorId(), Role.ROLE_MENTOR)) {
-            throw new UserNotFoundException("Mentor with id '%s' not found. Course is not saved".formatted(courseDto.getMentorId()));
-        }
+
+
+        UUID supervisorUUID = Objects.requireNonNull(SecurityUtils.getCurrentUser()).uuid();
 
         Course course = courseMapper.toEntity(courseDto);
 
-        System.out.println(course);
         course.setStatus(CourseStatus.CREATED); // set to CREATED by default when course persisted for the first time
-        course.setSupervisorId(2L);
+        course.setSupervisorId(supervisorUUID);
         Course savedCourse = courseRepository.save(course);
 
         audit.auditChange(
@@ -63,15 +65,9 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public CourseResponseDTO getById(Long id) {
         Optional<Course> courseById = courseRepository.findCourseByIdAndDeletedAtIsNull(id);
-        var response = courseMapper.toResponseDto(courseById.orElseThrow(
+        return courseMapper.toResponseDto(courseById.orElseThrow(
                 () -> new CourseNotFoundException("Course with provided id: '%s' not found".formatted(id))
         ));
-
-        User userById = userService.findById(courseById.get().getMentorId());
-
-        response.setMentorUsername(userById.getUsername()); // what if course exists but mentor deleted from a system
-
-        return response;
     }
 
     @Override
@@ -82,11 +78,6 @@ public class CourseServiceImpl implements CourseService {
         List<CourseResponseDTO> responseDTOS = new ArrayList<>();
         for (Course course : courses) {
             CourseResponseDTO responseDto = courseMapper.toResponseDto(course);
-
-            User mentor = userService.findById(course.getMentorId());
-
-            responseDto.setMentorUsername(mentor.getUsername());
-
             responseDTOS.add(responseDto);
         }
         return responseDTOS;
@@ -108,7 +99,6 @@ public class CourseServiceImpl implements CourseService {
                         "Course with id '%s' not found. Cannot update".formatted(id)));
 
         boolean changed = false;
-        String mentorUsername = userService.findById(course.getMentorId()).getUsername();
 
         if (dto.getName() != null && !dto.getName().trim().isEmpty()
                 && !dto.getName().equals(course.getName())
@@ -129,16 +119,6 @@ public class CourseServiceImpl implements CourseService {
             changed = true;
         }
 
-        if (dto.getMentorId() != null && !dto.getMentorId().equals(course.getMentorId())) {
-            if (userService.existsByIdAndRole(dto.getMentorId(), Role.ROLE_MENTOR)) {
-                audit.auditChange(course.getId(), "UPDATED", "mentorId",
-                        String.valueOf(course.getMentorId()), String.valueOf(dto.getMentorId()), null);
-                course.setMentorId(dto.getMentorId());
-                mentorUsername = userService.findById(dto.getMentorId()).getUsername();
-                changed = true;
-            }
-        }
-
         if (dto.getCourseStatus() != null && !dto.getCourseStatus().equals(course.getStatus())) {
             audit.auditChange(course.getId(), "UPDATED", "status",
                     String.valueOf(course.getStatus()), String.valueOf(dto.getCourseStatus()), null);
@@ -153,7 +133,6 @@ public class CourseServiceImpl implements CourseService {
         } else {
             responseDTO = courseMapper.toResponseDto(course); // no update
         }
-        responseDTO.setMentorUsername(mentorUsername);
 
         return responseDTO;
     }
@@ -179,5 +158,38 @@ public class CourseServiceImpl implements CourseService {
                 "id", id.toString(),
                 "deletedAt", course.getDeletedAt().toString()
         ));
+    }
+
+    @Override
+    public AssignUsersResponse assignUsers(Long courseId, UserIdsRequest request) {
+        Optional<Course> courseById = courseRepository.findById(courseId);
+
+        if (courseById.isEmpty()) {
+            throw new CourseNotFoundException(
+                    "Course with id '%s' not found. Cannot assign users".formatted(courseId)
+            );
+        }
+
+        Course course = courseById.get();
+
+        ResponseEntity<List<UserDto>> response = userClient.findAllByIds(request);
+        if (!response.getStatusCode().is2xxSuccessful()) {
+
+        }
+        List<UserDto> users = response.getBody();
+        assert users != null;
+        var internIds = users.stream()
+                .filter(userDto -> userDto.getRoles().contains(Role.ROLE_INTERN))
+                .map(UserDto::getUuid).toList();
+
+        var mentorIds = users.stream().filter(
+                userDto -> userDto.getRoles().contains(Role.ROLE_MENTOR)).map(
+                UserDto::getUuid).toList();
+
+        course.getInternIds().addAll(internIds);
+        course.getMentorIds().addAll(mentorIds);
+
+        courseRepository.save(course);
+        return new AssignUsersResponse(courseId, mentorIds, internIds);
     }
 }
