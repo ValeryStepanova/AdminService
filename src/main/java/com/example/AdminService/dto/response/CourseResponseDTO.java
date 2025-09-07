@@ -13,5 +13,4 @@ public class CourseResponseDTO {
     private String name;
     private String description;
     private CourseStatus status;
-    private String mentorUsername;
 }

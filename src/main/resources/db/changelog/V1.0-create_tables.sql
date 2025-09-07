@@ -13,8 +13,7 @@ CREATE TABLE courses
     id            BIGSERIAL PRIMARY KEY,
     name          VARCHAR(255)                        NOT NULL,
     description   VARCHAR(255)                        NOT NULL,
-    supervisor_id BIGINT                              NOT NULL,
-    mentor_id     BIGINT                              NOT NULL,
+    supervisor_id UUID                                NOT NULL,
     status        VARCHAR(50)                         NOT NULL,
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at    TIMESTAMP,
@@ -54,26 +53,46 @@ CREATE TABLE tasks
 CREATE TABLE course_audit
 (
     id           BIGSERIAL PRIMARY KEY,
-    course_id    BIGINT       NOT NULL,
-    action       VARCHAR(20)  NOT NULL, -- e.g., CREATED, UPDATED, DELETED
-    field        VARCHAR(100),          -- e.g., name, description, mentorId
+    course_id    BIGINT      NOT NULL,
+    action       VARCHAR(20) NOT NULL, -- e.g., CREATED, UPDATED, DELETED
+    field        VARCHAR(100),         -- e.g., name, description, mentorId
     old_value    TEXT,
     new_value    TEXT,
-    performed_by VARCHAR(255), -- username or userId
-    performed_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    performed_by VARCHAR(255),         -- username or userId
+    performed_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_course_audit_course
         FOREIGN KEY (course_id) REFERENCES courses (id)
             ON DELETE CASCADE
 );
 
-CREATE TABLE audit_log (
-                           id BIGSERIAL PRIMARY KEY,
-                           entity_name VARCHAR(255) NOT NULL,
-                           entity_id BIGINT NOT NULL,
-                           old_value TEXT,
-                           new_value TEXT,
-                           operation VARCHAR(50) NOT NULL,
-                           updated_by VARCHAR(255),
-                           updated_at TIMESTAMP NOT NULL
+CREATE TABLE audit_log
+(
+    id          BIGSERIAL PRIMARY KEY,
+    entity_name VARCHAR(255) NOT NULL,
+    entity_id   BIGINT       NOT NULL,
+    old_value   TEXT,
+    new_value   TEXT,
+    operation   VARCHAR(50)  NOT NULL,
+    updated_by  VARCHAR(255),
+    updated_at  TIMESTAMP    NOT NULL
 );
+
+CREATE TABLE course_mentors
+(
+    id        BIGSERIAL PRIMARY KEY,
+    course_id BIGINT NOT NULL REFERENCES courses (id) ON DELETE CASCADE,
+    mentor_id UUID   NOT NULL
+);
+ALTER TABLE course_mentors
+    ADD CONSTRAINT uq_course_mentor UNIQUE (course_id, mentor_id);
+
+CREATE TABLE course_interns
+(
+    id         BIGSERIAL PRIMARY KEY,
+    course_id  BIGINT NOT NULL REFERENCES courses (id) ON DELETE CASCADE,
+    intern_id UUID   NOT NULL
+);
+ALTER TABLE course_students
+    ADD CONSTRAINT uq_course_student UNIQUE (course_id, student_id);
+

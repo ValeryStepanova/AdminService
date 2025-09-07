@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,10 +30,23 @@ public class Course {
     private String description;
 
     @Column(name = "supervisor_id", nullable = false)
-    private Long supervisorId;
+    private UUID supervisorId;
 
+    @ElementCollection
+    @CollectionTable(
+            name = "course_mentors",
+            joinColumns = @JoinColumn(name = "course_id")
+    )
     @Column(name = "mentor_id", nullable = false)
-    private Long mentorId;
+    private Set<UUID> mentorIds = new HashSet<>();
+
+    @ElementCollection
+    @CollectionTable(
+            name = "course_interns",
+            joinColumns = @JoinColumn(name = "course_id")
+    )
+    @Column(name = "intern_id", nullable = false)
+    private Set<UUID> internIds = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

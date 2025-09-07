@@ -3,18 +3,20 @@ package com.example.AdminService.contoller;
 import com.example.AdminService.dto.request.CourseCreateRequestDTO;
 import com.example.AdminService.dto.request.CourseUpdateRequestDTO;
 import com.example.AdminService.dto.response.ApiResponse;
+import com.example.AdminService.dto.response.AssignUsersResponse;
 import com.example.AdminService.dto.response.CourseCreateResponseDTO;
 import com.example.AdminService.dto.response.CourseResponseDTO;
 import com.example.AdminService.service.CourseService;
+import com.itechart.profileserviceapi.dto.UserIdsRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/courses")
@@ -32,6 +34,7 @@ public class CourseController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_SUPERVISOR')")
     public ResponseEntity<ApiResponse<?>> createCourse(@RequestBody @Valid CourseCreateRequestDTO courseDto) {
         CourseCreateResponseDTO savedCourse = courseService.createCourse(courseDto);
         return ResponseEntity.status(HttpStatus.CREATED.value()).body(
@@ -39,13 +42,26 @@ public class CourseController {
         );
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/summary")
     public ResponseEntity<ApiResponse<?>> getCourseById(@PathVariable Long id) {
         CourseResponseDTO course = courseService.getById(id);
         return ResponseEntity.status(HttpStatus.OK.value()).body(
                 ApiResponse.success(course, "Course with provided id '%s' found".formatted(id))
         );
     }
+
+    @PostMapping("/{courseId}/users")
+    public ResponseEntity<ApiResponse<?>> assignUsers(
+            @PathVariable Long courseId,
+            @RequestBody UserIdsRequest request) {
+
+        AssignUsersResponse response = courseService.assignUsers(courseId, request);
+
+        return ResponseEntity.status(HttpStatus.CREATED.value()).body(
+                ApiResponse.success(response, "users assigned successfully")
+        );
+    }
+
 
     @GetMapping
     public ResponseEntity<ApiResponse<?>> getAllCourses(
@@ -58,6 +74,7 @@ public class CourseController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_SUPERVISOR')")
     public ResponseEntity<ApiResponse<?>> updateCourse(
             @PathVariable Long id,
             @RequestBody CourseUpdateRequestDTO requestDTO) {
@@ -68,6 +85,7 @@ public class CourseController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_SUPERVISOR')")
     public ResponseEntity<ApiResponse<?>> deleteCourse(@PathVariable Long id) {
         var responseBody = courseService.deleteById(id);
         return ResponseEntity.status(HttpStatus.OK).body(
