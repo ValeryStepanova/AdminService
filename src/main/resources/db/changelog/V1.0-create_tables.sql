@@ -93,6 +93,6 @@ CREATE TABLE course_interns
     course_id  BIGINT NOT NULL REFERENCES courses (id) ON DELETE CASCADE,
     intern_id UUID   NOT NULL
 );
-ALTER TABLE course_students
-    ADD CONSTRAINT uq_course_student UNIQUE (course_id, student_id);
+ALTER TABLE course_interns
+    ADD CONSTRAINT uq_course_student UNIQUE (course_id, intern_id_id);
 
