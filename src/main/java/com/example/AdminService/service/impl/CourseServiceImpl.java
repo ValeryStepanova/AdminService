@@ -7,7 +7,6 @@ import com.example.AdminService.dto.response.CourseCreateResponseDTO;
 import com.example.AdminService.dto.response.CourseResponseDTO;
 import com.example.AdminService.entities.Course;
 import com.example.AdminService.entities.enums.CourseStatus;
-import com.example.AdminService.repositories.UserRepository;
 import com.example.AdminService.utils.SecurityUtils;
 import com.itechart.profileserviceapi.api.UserClient;
 import com.itechart.profileserviceapi.dto.UserDto;
@@ -39,7 +38,6 @@ public class CourseServiceImpl implements CourseService {
     private final CourseMapper courseMapper;
     private final CourseAuditService audit;
     private final UserClient userClient;
-    private final UserRepository userRepository;
 
     @Override
     public CourseCreateResponseDTO createCourse(CourseCreateRequestDTO courseDto) {
