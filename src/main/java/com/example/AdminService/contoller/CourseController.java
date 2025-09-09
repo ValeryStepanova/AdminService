@@ -7,10 +7,13 @@ import com.example.AdminService.dto.response.AssignUsersResponse;
 import com.example.AdminService.dto.response.CourseCreateResponseDTO;
 import com.example.AdminService.dto.response.CourseResponseDTO;
 import com.example.AdminService.service.CourseService;
+import com.itechart.profileserviceapi.dto.UserDto;
 import com.itechart.profileserviceapi.dto.UserIdsRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -96,4 +99,49 @@ public class CourseController {
         );
     }
 
+    @GetMapping("/{courseId}/interns")
+    public ResponseEntity<ApiResponse<?>> getCourseInterns(
+            @PathVariable(name = "courseId") Long courseId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<UserDto> internsByCourse = courseService.findInternsByCourse(courseId, pageRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(
+                        internsByCourse,
+                        "Interns by course fetched successfully"
+                )
+        );
+    }
+
+    @GetMapping("/{courseId}/mentors")
+    public ResponseEntity<ApiResponse<?>> getCourseMentors(
+            @PathVariable(name = "courseId") Long courseId
+    ) {
+        List<UserDto> mentorsByCourse = courseService.findMentorsByCourse(courseId);
+
+        return ResponseEntity.status(
+                HttpStatus.OK
+        ).body(
+                ApiResponse.success(
+                        mentorsByCourse,
+                        "Mentors by course fetched successfully"
+                )
+        );
+    }
+
+    @DeleteMapping("/{courseId}/users")
+    public ResponseEntity<ApiResponse<?>> unassignUsers(
+            @PathVariable(name = "courseId") Long courseId,
+            @RequestBody UserIdsRequest requestBody
+    ) {
+        UserIdsRequest unassignedUsers = courseService.unassignUsers(courseId, requestBody);
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        unassignedUsers,
+                        "Total users unassigned from course by ids: %d".formatted(unassignedUsers.userIds().size())
+                )
+        );
+    }
 }

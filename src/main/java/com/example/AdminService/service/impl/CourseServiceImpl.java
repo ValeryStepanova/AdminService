@@ -7,6 +7,7 @@ import com.example.AdminService.dto.response.CourseCreateResponseDTO;
 import com.example.AdminService.dto.response.CourseResponseDTO;
 import com.example.AdminService.entities.Course;
 import com.example.AdminService.entities.enums.CourseStatus;
+import com.example.AdminService.repositories.UserRepository;
 import com.example.AdminService.utils.SecurityUtils;
 import com.itechart.profileserviceapi.api.UserClient;
 import com.itechart.profileserviceapi.dto.UserDto;
@@ -20,9 +21,12 @@ import com.example.AdminService.service.CourseAuditService;
 import com.example.AdminService.service.CourseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -35,6 +39,7 @@ public class CourseServiceImpl implements CourseService {
     private final CourseMapper courseMapper;
     private final CourseAuditService audit;
     private final UserClient userClient;
+    private final UserRepository userRepository;
 
     @Override
     public CourseCreateResponseDTO createCourse(CourseCreateRequestDTO courseDto) {
@@ -138,6 +143,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    @Transactional
     public Map<String, String> deleteById(Long id) {
         var course = courseRepository.findCourseByIdAndDeletedAtIsNull(id).orElseThrow(
                 () -> new CourseNotFoundException("Course with id '%s' not found. Cannot delete".formatted(id))
@@ -152,6 +158,8 @@ public class CourseServiceImpl implements CourseService {
                 null
 
         );
+        courseRepository.deleteMentorRelationsByCourse(id);
+        courseRepository.deleteInternRelationsByCourse(id);
         courseRepository.save(course);
 
         return new HashMap<>(Map.of(
@@ -177,6 +185,7 @@ public class CourseServiceImpl implements CourseService {
 
         }
         List<UserDto> users = response.getBody();
+        log.info("found users by ids: {}", users);
         assert users != null;
         var internIds = users.stream()
                 .filter(userDto -> userDto.getRoles().contains(Role.ROLE_INTERN))
@@ -191,5 +200,61 @@ public class CourseServiceImpl implements CourseService {
 
         courseRepository.save(course);
         return new AssignUsersResponse(courseId, mentorIds, internIds);
+    }
+
+    @Override
+    public Page<UserDto> findInternsByCourse(Long courseId, PageRequest pageRequest) {
+        if (!courseRepository.existsById(courseId)) {
+            throw new CourseNotFoundException("Course with id '%d' not found. Cannot fetch interns".formatted(courseId));
+        }
+
+        Page<UUID> internIdsPage = courseRepository.findInternIdsByCourseId(courseId, pageRequest);
+
+        ResponseEntity<List<UserDto>> usersByIds = userClient.findAllByIds(new UserIdsRequest(internIdsPage.getContent()));
+
+        if (usersByIds.getStatusCode().isError()) {
+            throw new RuntimeException(
+                    "Error while fetching user info from profile service. Status code: %s"
+                            .formatted(usersByIds.getStatusCode())
+            );
+        }
+
+        List<UserDto> users = Objects.requireNonNull(usersByIds.getBody())
+                .stream()
+                .sorted(Comparator.comparing(UserDto::getUsername))
+                .toList();
+
+        log.info("Total users found that are assigned to course '{}': {}", courseId, users.size());
+
+        return new PageImpl<>(users, pageRequest, internIdsPage.getTotalElements());
+    }
+
+
+    @Override
+    public List<UserDto> findMentorsByCourse(Long courseId) {
+        if (!courseRepository.existsById(courseId)) {
+            throw new CourseNotFoundException("Course with id '%d' not found. Cannot fetch mentors");
+        }
+
+        List<UUID> mentorIds = courseRepository.findMentorsByCourseId(courseId);
+        ResponseEntity<List<UserDto>> response = userClient.findAllByIds(new UserIdsRequest(
+                mentorIds
+        ));
+
+        if (response.getStatusCode().isError()) {
+            throw new RuntimeException("Error while fetching user info from profile service. Status code: %s".formatted(response.getStatusCode()));
+        }
+
+        return Objects.requireNonNull(response.getBody()).stream().sorted(Comparator.comparing(UserDto::getUsername)).toList();
+    }
+
+    @Override
+    public UserIdsRequest unassignUsers(Long courseId, UserIdsRequest requestBody) {
+        List<UUID> deletedIds = new LinkedList<>();
+        deletedIds.addAll(courseRepository.unassignInterns(courseId, requestBody.userIds()));
+        deletedIds.addAll(courseRepository.unassignMentors(courseId, requestBody.userIds()));
+        return new UserIdsRequest(
+                deletedIds
+        );
     }
 }
