@@ -1,6 +1,6 @@
 package com.example.AdminService.entities;
 
-import com.example.AdminService.entities.enums.EntityOperations;
+import com.example.AdminService.enums.EntityOperations;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

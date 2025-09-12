@@ -1,7 +1,8 @@
 package com.example.AdminService.dto.request;
 
-import com.example.AdminService.entities.enums.CourseStatus;
 import lombok.Data;
+
+import com.example.AdminService.enums.CourseStatus;
 
 @Data
 public class CourseUpdateRequestDTO {

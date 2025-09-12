@@ -1,0 +1,16 @@
+package com.example.AdminService.dto.task;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public record TaskRequest(
+    @NotNull(message = "Course ID is required")
+    Long courseId,
+
+    @NotBlank(message = "Title is required")
+    String title,
+
+    @NotBlank(message = "Definition is required")
+    String definition
+) {
+}

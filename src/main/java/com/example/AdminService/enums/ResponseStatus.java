@@ -1,0 +1,59 @@
+package com.example.AdminService.enums;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
+@Getter
+@AllArgsConstructor
+public enum ResponseStatus {
+    OK(0, HttpStatus.OK, "Success"),
+    INTERNAL_SERVER_ERROR(1, HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error"),
+    REQUEST_PARAMETER_NOT_FOUND(2, HttpStatus.BAD_REQUEST, "Request parameter not found"),
+    INVALID_REQUEST(3, HttpStatus.BAD_REQUEST, "Invalid request"),
+    TOKEN_REQUIRED(4, HttpStatus.BAD_REQUEST, "Missing JWT token"),
+    TOKEN_NOT_FOUND(5, HttpStatus.BAD_REQUEST, "Token not found"),
+    INVALID_TOKEN(6, HttpStatus.BAD_REQUEST, "Invalid token"),
+    TOKEN_EXPIRED(7, HttpStatus.BAD_REQUEST, "Token expired"),
+    TOKEN_MISMATCH_EXCEPTION(8, HttpStatus.BAD_REQUEST, "This token does not belong to you! Use your own token."),
+    TOKEN_PROCESSING_ERROR(9, HttpStatus.INTERNAL_SERVER_ERROR, "Token processing error"),
+    TOKEN_MUST_START_WITH_BEARER(10, HttpStatus.BAD_REQUEST, "Token must start with 'Bearer '"),
+    UNKNOWN_TYPE(11, HttpStatus.BAD_REQUEST, "Unknown type provided"),
+    ERROR_GETTING_ACCESS_TOKEN(12, HttpStatus.INTERNAL_SERVER_ERROR, "Error while getting access token"),
+    METHOD_NOT_ALLOWED(13, HttpStatus.BAD_REQUEST, "Method not allowed"),
+    UNAUTHORIZED(14, HttpStatus.UNAUTHORIZED, "Authentication failed or token expired"),
+    FORBIDDEN(15, HttpStatus.FORBIDDEN, "You do not have enough permissions to access this resource"),
+    RESOURCE_NOT_FOUND(16, HttpStatus.NOT_FOUND, "Resource not found"),
+    ROLE_MISMATCH_EXCEPTION(17, HttpStatus.INTERNAL_SERVER_ERROR, "Your roles in the system do not match"),
+    USER_NOT_FOUND(100, HttpStatus.NOT_FOUND, "User not found"),
+    EMAIL_ALREADY_REGISTERED(101, HttpStatus.BAD_REQUEST, "This email is already registered"),
+    USERNAME_ALREADY_REGISTERED(102, HttpStatus.BAD_REQUEST, "This username is already registered"),
+    EMAIL_OR_USERNAME_ALREADY_REGISTERED(103, HttpStatus.BAD_REQUEST, "This email or username is already registered"),
+    EMAIL_OR_USERNAME_NOT_REGISTERED(104, HttpStatus.BAD_REQUEST, "This email or username is not registered in the system"),
+    EMAIL_REQUIRED(105, HttpStatus.BAD_REQUEST, "Email is required"),
+    EMAIL_CONFIRMATION_REQUIRED(106, HttpStatus.BAD_REQUEST, "Please, confirm your email address registered in the system"),
+    INCORRECT_PASSWORD(107, HttpStatus.BAD_REQUEST, "Incorrect password"),
+    PASSWORDS_DO_NOT_MATCH(108, HttpStatus.BAD_REQUEST, "New password and confirm password do not match"),
+    PROVIDE_NEW_PASSWORD(109, HttpStatus.BAD_REQUEST, "Provide different password than your old password"),
+    ERROR_REGISTERING_USER(110, HttpStatus.INTERNAL_SERVER_ERROR, "Error while registering user"),
+    LISTENER_CONTAINER_NOT_FOUND(200, HttpStatus.NOT_FOUND, "Listener container not found"),
+    LISTENER_CONTAINER_ALREADY_STARTED(201, HttpStatus.BAD_REQUEST, "Listener container already started"),
+    LISTENER_CONTAINER_ALREADY_STOPPED(202, HttpStatus.BAD_REQUEST, "Listener container already stopped"),
+    COURSE_NOT_FOUND(300, HttpStatus.NOT_FOUND, "Course not found"),
+    COURSE_ALREADY_EXISTS(301, HttpStatus.BAD_REQUEST, "Course with this name already exists in this program"),
+    PROGRAM_NOT_FOUND(302, HttpStatus.NOT_FOUND, "Program not found"),
+    PROGRAM_ALREADY_EXISTS(303, HttpStatus.NOT_FOUND, "Program with this name already exists"),
+    EXPERT_ID_REQUIRED(304, HttpStatus.BAD_REQUEST, "Expert ID is required"),
+    TASK_ALREADY_EXISTS(305, HttpStatus.BAD_REQUEST, "Task with this name already exists in this program"),
+    TASK_NOT_FOUND(306, HttpStatus.NOT_FOUND, "Task not found"),
+    MENTOR_ID_REQUIRED(307, HttpStatus.BAD_REQUEST, "Mentor ID is required"),
+    ALPHA_NUMERIC_VALUE_REQUIRED(308, HttpStatus.BAD_REQUEST, "Name or title must contain only letters and numbers"),
+    SPECIALIST_NOT_FOUND(309, HttpStatus.NOT_FOUND, "Specialist not found"),
+    SPECIALIST_ALREADY_ASSIGNED(310, HttpStatus.BAD_REQUEST, "Specialist already assigned"),
+    SPECIALIST_ALREADY_UNASSIGNED(311, HttpStatus.BAD_REQUEST, "Specialist already unassigned");
+
+
+    private final Integer statusCode;
+    private final HttpStatus httpStatus;
+    private final String description;
+}

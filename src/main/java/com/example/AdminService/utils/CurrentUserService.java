@@ -10,7 +10,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import java.util.UUID;
 
 @UtilityClass
-public class SecurityUtils {
+public class CurrentUserService {
 
     public static UserPrincipal getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -20,6 +20,8 @@ public class SecurityUtils {
             return new UserPrincipal(
                     UUID.fromString(jwt.getSubject()),
                     jwt.getClaim("preferred_username"),
+                    jwt.getClaim("first_name"),
+                    jwt.getClaim("last_name"),
                     jwt.getClaim("email"),
                     jwt.getClaimAsStringList("roles")
             );

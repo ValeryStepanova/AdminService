@@ -1,44 +1,54 @@
 package com.example.AdminService.entities;
 
+import com.example.AdminService.enums.ProgramStatus;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-@Builder
 @Getter
 @Setter
 @Table(name = "programs")
 @Entity
-public class Program {
+public class Program extends BaseEntity {
     @Id
     @SequenceGenerator(name = "programs_id_seq", sequenceName = "programs_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "programs_id_seq")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id", nullable = false)
-    private Course course;
-
-    @Column(name = "expert_id", nullable = false)
-    private Long expertId;
+    @Column(name = "name", nullable = false, unique = true)
+    private String name;
 
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "approved", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private Boolean approved = false;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(50) DEFAULT 'ACTIVE'")
+    private ProgramStatus status = ProgramStatus.ACTIVE;
 
-    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Override
+    public void softDelete(UUID currentUserId) {
+        if (status != null && !status.equals(ProgramStatus.DELETED)) {
+            if (getDeletedAt() == null) setDeletedAt(LocalDateTime.now());
+            if (getDeletedBy() == null) setDeletedBy(currentUserId);
+            status = ProgramStatus.DELETED;
+            name = getDeletedName(getName());
+        }
+    }
 
-    @Column(name = "deleted_at", updatable = false)
-    private LocalDateTime deletedAt;
-
+    private String getDeletedName(String name) {
+        return String.format(
+            "%s_deleted_at_%s",
+            name.replace(" ", "-"),
+            DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss:SSS").format(getDeletedAt())
+        );
+    }
 }

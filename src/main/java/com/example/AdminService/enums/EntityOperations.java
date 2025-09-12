@@ -1,4 +1,4 @@
-package com.example.AdminService.entities.enums;
+package com.example.AdminService.enums;
 
 public enum EntityOperations {
     CREATE,

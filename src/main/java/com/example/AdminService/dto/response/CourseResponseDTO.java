@@ -1,9 +1,10 @@
 package com.example.AdminService.dto.response;
 
-import com.example.AdminService.entities.enums.CourseStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import com.example.AdminService.enums.CourseStatus;
 
 @Data
 @AllArgsConstructor

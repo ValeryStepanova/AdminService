@@ -1,23 +1,21 @@
 package com.example.AdminService.entities;
 
-import com.example.AdminService.entities.enums.CourseStatus;
+import com.example.AdminService.enums.CourseStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Builder
 @Getter
 @Setter
-@Table(name = "courses")
+@Table(name = "courses", uniqueConstraints = @UniqueConstraint(columnNames = {"program_id", "name"}))
 @Entity
-public class Course {
+public class Course extends BaseEntity {
     @Id
     @SequenceGenerator(name = "courses_id_seq", sequenceName = "courses_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "courses_id_seq")
@@ -26,38 +24,33 @@ public class Course {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = false, length = 500)
     private String description;
 
-    @Column(name = "supervisor_id", nullable = false)
-    private UUID supervisorId;
-
-    @ElementCollection
-    @CollectionTable(
-            name = "course_mentors",
-            joinColumns = @JoinColumn(name = "course_id")
-    )
-    @Column(name = "mentor_id", nullable = false)
-    private Set<UUID> mentorIds = new HashSet<>();
-
-    @ElementCollection
-    @CollectionTable(
-            name = "course_interns",
-            joinColumns = @JoinColumn(name = "course_id")
-    )
-    @Column(name = "intern_id", nullable = false)
-    private Set<UUID> internIds = new HashSet<>();
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "program_id", nullable = false)
+    private Program program;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private CourseStatus status;
+    @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(50) DEFAULT 'PENDING_APPROVAL'")
+    private CourseStatus status = CourseStatus.PENDING_APPROVAL;
 
-    @Column(name = "created_at", nullable = false, updatable = false, insertable = false)
-    private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Override
+    public void softDelete(UUID currentUserId) {
+        if (status != null && !status.equals(CourseStatus.DELETED)) {
+            if (getDeletedAt() == null) setDeletedAt(LocalDateTime.now());
+            if (getDeletedBy() == null) setDeletedBy(currentUserId);
+            status = CourseStatus.DELETED;
+            name = getDeletedName(getName());
+        }
+    }
 
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
+    private String getDeletedName(String name) {
+        return String.format(
+            "%s_deleted_at_%s",
+            name.replace(" ", "-"),
+            DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss:SSS").format(getDeletedAt())
+        );
+    }
 }

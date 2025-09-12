@@ -1,147 +1,90 @@
 package com.example.AdminService.contoller;
 
-import com.example.AdminService.dto.request.CourseCreateRequestDTO;
-import com.example.AdminService.dto.request.CourseUpdateRequestDTO;
-import com.example.AdminService.dto.response.ApiResponse;
-import com.example.AdminService.dto.response.AssignUsersResponse;
-import com.example.AdminService.dto.response.CourseCreateResponseDTO;
-import com.example.AdminService.dto.response.CourseResponseDTO;
-import com.example.AdminService.service.CourseService;
-import com.itechart.profileserviceapi.dto.UserDto;
-import com.itechart.profileserviceapi.dto.UserIdsRequest;
+import com.example.AdminService.dto.HttpResponse;
+import com.example.AdminService.dto.course.CourseRequest;
+import com.example.AdminService.dto.course.CourseResponse;
+import com.example.AdminService.dto.course.CourseResponseMin;
+import com.example.AdminService.dto.course.CourseUpdateRequest;
+import com.example.AdminService.enums.ResponseStatus;
+import com.example.AdminService.service.impl.CourseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/courses")
+@RequestMapping("/api/v1/admin/course")
 @RequiredArgsConstructor
-@Slf4j
 public class CourseController {
     private final CourseService courseService;
 
-    @PostMapping("/bulk")
-    public ResponseEntity<ApiResponse<?>> createCoursesBulk(@RequestBody List<CourseCreateRequestDTO> dtos) {
-        List<CourseCreateResponseDTO> response = courseService.createCoursesBulk(dtos);
-        return ResponseEntity.status(
-                HttpStatus.CREATED
-        ).body(ApiResponse.success(response, "%d course saved in total".formatted(response.size())));
-    }
 
-    @PostMapping
-    @PreAuthorize("hasAuthority('ROLE_SUPERVISOR')")
-    public ResponseEntity<ApiResponse<?>> createCourse(@RequestBody @Valid CourseCreateRequestDTO courseDto) {
-        CourseCreateResponseDTO savedCourse = courseService.createCourse(courseDto);
-        return ResponseEntity.status(HttpStatus.CREATED.value()).body(
-                ApiResponse.success(savedCourse, "Course with provided details saved")
+    @GetMapping("/all")
+    public ResponseEntity<HttpResponse> getAll() {
+        List<CourseResponseMin> courses = courseService.getAll();
+
+        return ResponseEntity.ok(
+            HttpResponse.builder()
+                .statusCode(ResponseStatus.OK.getStatusCode())
+                .description(ResponseStatus.OK.getDescription())
+                .data(Map.of("course", courses))
+                .build()
         );
     }
 
-    @GetMapping("/{id}/summary")
-    public ResponseEntity<ApiResponse<?>> getCourseById(@PathVariable Long id) {
-        CourseResponseDTO course = courseService.getById(id);
-        return ResponseEntity.status(HttpStatus.OK.value()).body(
-                ApiResponse.success(course, "Course with provided id '%s' found".formatted(id))
+    @GetMapping("/{id}")
+    public ResponseEntity<HttpResponse> get(@PathVariable Long id) {
+        CourseResponse course = courseService.getById(id);
+
+        return ResponseEntity.ok(
+            HttpResponse.builder()
+                .statusCode(ResponseStatus.OK.getStatusCode())
+                .description(ResponseStatus.OK.getDescription())
+                .data(Map.of("course", course))
+                .build()
         );
     }
 
-    @PostMapping("/{courseId}/users")
-    public ResponseEntity<ApiResponse<?>> assignUsers(
-            @PathVariable Long courseId,
-            @RequestBody UserIdsRequest request) {
+    @PostMapping()
+    public ResponseEntity<HttpResponse> create(@RequestBody @Valid CourseRequest request) {
+        CourseResponse course = courseService.create(request);
 
-        AssignUsersResponse response = courseService.assignUsers(courseId, request);
-
-        return ResponseEntity.status(HttpStatus.CREATED.value()).body(
-                ApiResponse.success(response, "users assigned successfully")
-        );
-    }
-
-
-    @GetMapping
-    public ResponseEntity<ApiResponse<?>> getAllCourses(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        List<CourseResponseDTO> foundCourses = courseService.findAllCourses(page, size);
-        return ResponseEntity.status(HttpStatus.OK.value()).body(
-                ApiResponse.success(foundCourses, "%d courses found in total".formatted(foundCourses.size()))
+        return ResponseEntity.ok(
+            HttpResponse.builder()
+                .statusCode(HttpStatus.CREATED.value())
+                .description(HttpStatus.CREATED.name())
+                .data(Map.of("course", course))
+                .build()
         );
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_SUPERVISOR')")
-    public ResponseEntity<ApiResponse<?>> updateCourse(
-            @PathVariable Long id,
-            @RequestBody CourseUpdateRequestDTO requestDTO) {
-        CourseResponseDTO responseDTO = courseService.updateCourseById(id, requestDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                ApiResponse.success(responseDTO, "Course updated successfully")
+    public ResponseEntity<HttpResponse> update(@PathVariable Long id, @RequestBody @Valid CourseUpdateRequest request) {
+        CourseResponse course = courseService.updateById(id, request);
+
+        return ResponseEntity.ok(
+            HttpResponse.builder()
+                .statusCode(HttpStatus.OK.value())
+                .description(HttpStatus.OK.name())
+                .data(Map.of("course", course))
+                .build()
         );
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_SUPERVISOR')")
-    public ResponseEntity<ApiResponse<?>> deleteCourse(@PathVariable Long id) {
-        var responseBody = courseService.deleteById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                ApiResponse.success(
-                        responseBody,
-                        "Course with id '%d' deleted successfully".formatted(id)
-                )
-        );
-    }
+    public ResponseEntity<HttpResponse> delete(@PathVariable Long id) {
+        courseService.deleteById(id);
 
-    @GetMapping("/{courseId}/interns")
-    public ResponseEntity<ApiResponse<?>> getCourseInterns(
-            @PathVariable(name = "courseId") Long courseId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<UserDto> internsByCourse = courseService.findInternsByCourse(courseId, pageRequest);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                ApiResponse.success(
-                        internsByCourse,
-                        "Interns by course fetched successfully"
-                )
-        );
-    }
-
-    @GetMapping("/{courseId}/mentors")
-    public ResponseEntity<ApiResponse<?>> getCourseMentors(
-            @PathVariable(name = "courseId") Long courseId
-    ) {
-        List<UserDto> mentorsByCourse = courseService.findMentorsByCourse(courseId);
-
-        return ResponseEntity.status(
-                HttpStatus.OK
-        ).body(
-                ApiResponse.success(
-                        mentorsByCourse,
-                        "Mentors by course fetched successfully"
-                )
-        );
-    }
-
-    @DeleteMapping("/{courseId}/users")
-    public ResponseEntity<ApiResponse<?>> unassignUsers(
-            @PathVariable(name = "courseId") Long courseId,
-            @RequestBody UserIdsRequest requestBody
-    ) {
-        UserIdsRequest unassignedUsers = courseService.unassignUsers(courseId, requestBody);
         return ResponseEntity.ok(
-                ApiResponse.success(
-                        unassignedUsers,
-                        "Total users unassigned from course by ids: %d".formatted(unassignedUsers.userIds().size())
-                )
+            HttpResponse.builder()
+                .statusCode(HttpStatus.OK.value())
+                .description(HttpStatus.OK.name())
+                .data("Course deleted successfully")
+                .build()
         );
     }
 }
