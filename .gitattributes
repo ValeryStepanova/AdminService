@@ -1,2 +1,3 @@
 /mvnw text eol=lf
-*.cmd text = auto
+*.cmd text=auto
+*.java text
