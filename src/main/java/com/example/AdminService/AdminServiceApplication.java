@@ -6,8 +6,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
-@EnableFeignClients
 @EnableJpaAuditing
+@EnableFeignClients(basePackages = {"com.itechart.profileserviceapi.api", "com.example.AdminService.client"})
 public class AdminServiceApplication {
 
 	public static void main(String[] args) {

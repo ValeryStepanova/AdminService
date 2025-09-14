@@ -13,7 +13,7 @@ import java.util.UUID;
 @ToString
 @Getter
 @Setter
-@Table(name = "courses", uniqueConstraints = @UniqueConstraint(columnNames = {"program_id", "name"}))
+@Table(name = "courses")
 @Entity
 public class Course extends BaseEntity {
     @Id
@@ -48,9 +48,9 @@ public class Course extends BaseEntity {
 
     private String getDeletedName(String name) {
         return String.format(
-            "%s_deleted_at_%s",
-            name.replace(" ", "-"),
-            DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss:SSS").format(getDeletedAt())
+                "%s_deleted_at_%s",
+                name.replace(" ", "-"),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss:SSS").format(getDeletedAt())
         );
     }
 }

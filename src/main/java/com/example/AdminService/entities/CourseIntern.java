@@ -12,25 +12,23 @@ import java.util.UUID;
 @ToString
 @Getter
 @Setter
-@Table(name = "courses_mentors", uniqueConstraints = @UniqueConstraint(columnNames = {"course_id", "mentor_id"}))
+@Table(name = "courses_interns", uniqueConstraints = @UniqueConstraint(columnNames = {"course_id", "intern_id"}))
 @Entity
-public class CourseMentor extends BaseEntity {
+public class CourseIntern extends BaseEntity {
     @Id
-    @SequenceGenerator(name = "courses_mentors_id_seq", sequenceName = "courses_mentors_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "courses_mentors_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
-    @Column(name = "mentor_id", nullable = false)
-    private UUID mentorId;
+    @Column(name = "intern_id", nullable = false)
+    private UUID internId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(50) DEFAULT 'ASSIGNED'")
     private SpecialistProgramStatus status = SpecialistProgramStatus.ASSIGNED;
-
 
     @Override
     public void softDelete(UUID currentUserId) {

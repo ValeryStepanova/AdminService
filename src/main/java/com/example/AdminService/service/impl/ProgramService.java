@@ -12,11 +12,15 @@ import com.example.AdminService.exception.ApiException;
 import com.example.AdminService.repositories.ProgramExpertRepository;
 import com.example.AdminService.repositories.ProgramRepository;
 import com.example.AdminService.utils.CurrentUserService;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.AdminService.enums.ProgramStatus.DELETED;
 import static com.example.AdminService.mapper.ProgramMapper.*;
@@ -36,7 +40,7 @@ public class ProgramService {
 
     public ProgramResponse getById(Long id) {
         Program program = programRepository.findByIdAndStatusNot(id, DELETED)
-            .orElseThrow(() -> new ApiException(ResponseStatus.PROGRAM_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ResponseStatus.PROGRAM_NOT_FOUND));
 
         List<ProgramExpert> experts = programExpertRepository.findAllByProgramId(program.getId());
 
@@ -53,7 +57,7 @@ public class ProgramService {
 
     public ProgramResponse updateById(Long id, ProgramRequest request) {
         Program program = programRepository.findByIdAndStatusNot(id, DELETED)
-            .orElseThrow(() -> new ApiException(ResponseStatus.PROGRAM_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ResponseStatus.PROGRAM_NOT_FOUND));
 
         if (programRepository.existsByNameAndStatusNot(request.name(), DELETED))
             throw new ApiException(ResponseStatus.PROGRAM_ALREADY_EXISTS);
@@ -69,7 +73,7 @@ public class ProgramService {
             throw new ApiException(ResponseStatus.METHOD_NOT_ALLOWED);
 
         Program program = programRepository.findByIdAndStatusNot(id, DELETED)
-            .orElseThrow(() -> new ApiException(ResponseStatus.PROGRAM_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ResponseStatus.PROGRAM_NOT_FOUND));
 
         program.setStatus(status);
         List<ProgramExpert> experts = programExpertRepository.findAllByProgramId(program.getId());
@@ -79,7 +83,7 @@ public class ProgramService {
 
     public void deleteById(Long id) {
         Program program = programRepository.findByIdAndStatusNot(id, DELETED)
-            .orElseThrow(() -> new ApiException(ResponseStatus.PROGRAM_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ResponseStatus.PROGRAM_NOT_FOUND));
 
         UserPrincipal currentUser = CurrentUserService.getCurrentUser();
 
@@ -90,5 +94,15 @@ public class ProgramService {
             log.error("User details are not present in the context for supervisor in ProgramService.delete()");
             throw new ApiException(ResponseStatus.REQUEST_PARAMETER_NOT_FOUND);
         }
+    }
+
+    public boolean existsById(@NotNull(message = "Program ID is required") Long id) {
+        return programRepository.existsByIdAndStatusNotDeleted(id);
+    }
+
+    public Program findById(@NotNull(message = "Program ID is required") Long id) {
+        return programRepository.findById(id).orElseThrow(() ->
+                new ApiException(ResponseStatus.PROGRAM_NOT_FOUND)
+        );
     }
 }

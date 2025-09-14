@@ -11,9 +11,6 @@ public class CourseMentorMapper {
         CourseMentor courseMentor = new CourseMentor();
         courseMentor.setCourse(course);
         courseMentor.setMentorId(mentor.getId());
-        courseMentor.setMentorFullName(mentor.getFirstName() + " " + mentor.getLastName());
-        courseMentor.setMentorEmail(mentor.getEmail());
-
         return courseMentor;
     }
 
@@ -21,9 +18,6 @@ public class CourseMentorMapper {
         CourseMentor courseMentor = new CourseMentor();
         courseMentor.setCourse(course);
         courseMentor.setMentorId(mentor.uuid());
-        courseMentor.setMentorFullName(mentor.firstName() + " " + mentor.lastName());
-        courseMentor.setMentorEmail(mentor.email());
-
         return courseMentor;
     }
 
