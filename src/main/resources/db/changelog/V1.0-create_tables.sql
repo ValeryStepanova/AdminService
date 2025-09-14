@@ -1,4 +1,5 @@
 -- Drop tasks_interns table first because it depends on tasks
+
 DROP TABLE IF EXISTS tasks_interns CASCADE;
 
 -- Drop tasks table first because it depends on

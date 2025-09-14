@@ -14,13 +14,11 @@ import java.util.UUID;
 @AllArgsConstructor
 public class InternResponse {
     private UUID id;
-    private String fullName;
-    private String email;
+    private String username;
 
 
     public InternResponse(TaskIntern intern) {
         this.id = intern.getInternId();
-        this.fullName = intern.getInternFullName();
-        this.email = intern.getInternEmail();
+        this.username = intern.getUsername();
     }
 }

@@ -13,25 +13,25 @@ import org.springframework.http.HttpHeaders;
 @Configuration
 @RequiredArgsConstructor
 public class AuthServiceInternalFeignClientConfig {
-    private final AdminServiceApiClient adminServiceApiClient;
+    //private final AdminServiceApiClient adminServiceApiClient;
     private final AuthServiceErrorDecoder authServiceErrorDecoder;
 
 
-    @Bean("adminServiceRequestInterceptor")
-    public RequestInterceptor serviceRequestInterceptor() {
-        return requestTemplate -> {
-            try {
-                String adminServiceAccessToken = adminServiceApiClient.getAdminServiceAccessToken();
-                String bearerToken = "Bearer " + adminServiceAccessToken;
-
-                log.info("Adding service token to internal request --> {}", bearerToken);
-                requestTemplate.header(HttpHeaders.AUTHORIZATION, bearerToken);
-            } catch (Exception e) {
-                log.error("Failed to add service token to request. Cause: {}", e.getMessage());
-                throw e;
-            }
-        };
-    }
+//    @Bean("adminServiceRequestInterceptor")
+//    public RequestInterceptor serviceRequestInterceptor() {
+//        return requestTemplate -> {
+//            try {
+//                //String adminServiceAccessToken = adminServiceApiClient.getAdminServiceAccessToken();
+//                String bearerToken = "Bearer " + adminServiceAccessToken;
+//
+//                log.info("Adding service token to internal request --> {}", bearerToken);
+//                requestTemplate.header(HttpHeaders.AUTHORIZATION, bearerToken);
+//            } catch (Exception e) {
+//                log.error("Failed to add service token to request. Cause: {}", e.getMessage());
+//                throw e;
+//            }
+//        };
+//    }
 
     @Bean("auth-service-error-decoder")
     public ErrorDecoder errorDecoder() {

@@ -16,8 +16,8 @@ import java.util.UUID;
 @Entity
 public class TaskIntern extends BaseEntity {
     @Id
-    @SequenceGenerator(name = "task_interns_id_seq", sequenceName = "task_interns_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "task_interns_id_seq")
+    //@SequenceGenerator(name = "task_interns_id_seq", sequenceName = "task_interns_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)//, generator = "task_interns_id_seq")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,10 +28,7 @@ public class TaskIntern extends BaseEntity {
     private UUID internId;
 
     @Column(name = "intern_full_name", nullable = false)
-    private String internFullName;
-
-    @Column(name = "intern_email", nullable = false)
-    private String internEmail;
+    private String username;
 
     @Column(name = "github_link", nullable = false, columnDefinition = "VARCHAR(500) DEFAULT 'NOT SUBMITTED'")
     private String githubLink;

@@ -10,7 +10,7 @@ public class ProgramExpertMapper {
         ProgramExpert programExpert = new ProgramExpert();
         programExpert.setProgram(program);
         programExpert.setExpertId(expert.getId());
-        programExpert.setExpertFullName(expert.getFirstName() + " " + expert.getLastName());
+        programExpert.setUsername(expert.getUsername());
         programExpert.setExpertEmail(expert.getEmail());
 
         return programExpert;

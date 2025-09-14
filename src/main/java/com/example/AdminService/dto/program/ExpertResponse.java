@@ -20,7 +20,7 @@ public class ExpertResponse {
 
     public ExpertResponse(ProgramExpert expert) {
         this.id = expert.getExpertId();
-        this.fullName = expert.getExpertFullName();
+        this.fullName = expert.getUsername();
         this.email = expert.getExpertEmail();
     }
 }

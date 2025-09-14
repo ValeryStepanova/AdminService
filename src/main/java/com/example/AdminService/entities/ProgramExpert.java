@@ -17,8 +17,8 @@ import java.util.UUID;
 @Entity
 public class ProgramExpert extends BaseEntity {
     @Id
-    @SequenceGenerator(name = "programs_experts_id_seq", sequenceName = "programs_experts_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "programs_experts_id_seq")
+    //@SequenceGenerator(name = "programs_experts_id_seq", sequenceName = "programs_experts_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)//, generator = "programs_experts_id_seq")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,7 +29,7 @@ public class ProgramExpert extends BaseEntity {
     private UUID expertId;
 
     @Column(name = "expert_full_name", nullable = false)
-    private String expertFullName;
+    private String username;
 
     @Column(name = "expert_email", nullable = false)
     private String expertEmail;
