@@ -20,7 +20,5 @@ public class MentorResponse {
 
     public MentorResponse(CourseMentor mentor) {
         this.id = mentor.getMentorId();
-        this.fullName = mentor.getMentorFullName();
-        this.email = mentor.getMentorEmail();
     }
 }

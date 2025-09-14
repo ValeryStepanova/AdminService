@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -21,10 +22,9 @@ public class CourseResponse {
     private String name;
     private String description;
     private ProgramResponseMin program;
-    private List<MentorResponse> mentors;
     private CourseStatus courseStatus;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private String createdAt;
+    private LocalDateTime createdAt;
 
 
     public CourseResponse(Course course, List<CourseMentor> mentors) {
@@ -32,8 +32,7 @@ public class CourseResponse {
         this.name = course.getName();
         this.description = course.getDescription();
         this.program = new ProgramResponseMin(course.getProgram());
-        this.mentors = mentors.stream().map(MentorResponse::new).toList();
         this.courseStatus = course.getStatus();
-        this.createdAt = course.getCreatedAt().toString();
+        this.createdAt = course.getCreatedAt();
     }
 }

@@ -10,6 +10,7 @@ public enum ResponseStatus {
     OK(0, HttpStatus.OK, "Success"),
     INTERNAL_SERVER_ERROR(1, HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error"),
     REQUEST_PARAMETER_NOT_FOUND(2, HttpStatus.BAD_REQUEST, "Request parameter not found"),
+    CREATED(HttpStatus.CREATED.value(), HttpStatus.CREATED, "Created"),
     INVALID_REQUEST(3, HttpStatus.BAD_REQUEST, "Invalid request"),
     TOKEN_REQUIRED(4, HttpStatus.BAD_REQUEST, "Missing JWT token"),
     TOKEN_NOT_FOUND(5, HttpStatus.BAD_REQUEST, "Token not found"),
