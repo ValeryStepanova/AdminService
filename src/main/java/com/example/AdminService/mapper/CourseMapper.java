@@ -8,34 +8,33 @@ import com.example.AdminService.entities.Course;
 import com.example.AdminService.entities.CourseMentor;
 import com.example.AdminService.entities.Program;
 import com.example.AdminService.enums.CourseStatus;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 
-public class CourseMapper {
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface CourseMapper {
 
     public static List<CourseResponseMin> toResponseList(List<Course> courses) {
         return courses.stream().map(CourseResponseMin::new).toList();
-    }
-
-    public static Course toEntity(CourseRequest request, Program program, Boolean isSupervisor) {
-        Course course = new Course();
-        BeanUtils.copyProperties(request, course, "programId");
-        course.setProgram(program);
-        if (isSupervisor)
-            course.setStatus(CourseStatus.ACTIVE);      // Course is being created by Supervisor. Thus, ACTIVE by default.
-        else
-            course.setStatus(CourseStatus.PENDING_APPROVAL);
-
-        return course;
     }
 
     public static CourseResponse toResponse(Course course, List<CourseMentor> mentors) {
         return new CourseResponse(course, mentors);
     }
 
-    public static void update(CourseUpdateRequest request, Course course) {
+    static void update(CourseUpdateRequest request, Course course) {
         BeanUtils.copyProperties(request, course);
     }
 
+    @Mapping(source = "program.id", target = "program.id")
+    @Mapping(source = "program.description", target = "program.description")
+    @Mapping(source = "program.name", target = "program.name")
+    @Mapping(source = "createdAt", target = "createdAt")
+    CourseResponse toResponse(Course course);
+
+    Course toEntity(CourseRequest request);
 }

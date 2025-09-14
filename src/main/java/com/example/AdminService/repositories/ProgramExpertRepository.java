@@ -22,4 +22,6 @@ public interface ProgramExpertRepository extends JpaRepository<ProgramExpert, Lo
 
     Optional<ProgramExpert> findByProgram_IdAndExpertId(Long program_id, UUID expertId);
     Boolean existsByProgramAndExpertIdAndStatus(Program program, UUID expertId, SpecialistProgramStatus status);
+
+    boolean existsByProgram_IdAndExpertIdAndStatus(Long programId, UUID expertId, SpecialistProgramStatus status);
 }
