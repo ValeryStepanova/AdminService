@@ -23,7 +23,7 @@ public class TaskInternController {
     @PostMapping("/assign/{task-id}")
     public ResponseEntity<HttpResponse> assignIntern(
         @PathVariable("task-id") Long taskId,
-        UserIdsRequest userIdsRequest
+       @RequestBody UserIdsRequest userIdsRequest
     ) {
         AssignInternsResponse task = taskInternService.assignIntern(taskId, userIdsRequest);
 
