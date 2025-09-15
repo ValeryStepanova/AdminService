@@ -10,6 +10,7 @@ import com.example.AdminService.entities.Program;
 import com.example.AdminService.enums.CourseStatus;
 import com.example.AdminService.enums.ResponseStatus;
 import com.example.AdminService.enums.Role;
+import com.example.AdminService.enums.SpecialistProgramStatus;
 import com.example.AdminService.exception.ApiException;
 import com.example.AdminService.exception.CourseNotFoundException;
 import com.example.AdminService.mapper.CourseMapper;
@@ -173,6 +174,7 @@ public class CourseService {
                 internId -> CourseIntern.builder()
                         .internId(internId)
                         .course(course)
+                        .status(ASSIGNED)
                         .build()
         ).toList();
 
@@ -181,6 +183,7 @@ public class CourseService {
         List<CourseMentor> courseMentors = mentorIds.stream().map(mentorId -> CourseMentor.builder()
                 .mentorId(mentorId)
                 .status(ASSIGNED)
+                .course(course)
                 .mentorId(mentorId)
                 .build()).toList();
 

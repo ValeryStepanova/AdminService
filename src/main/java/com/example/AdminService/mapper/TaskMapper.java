@@ -9,6 +9,7 @@ import com.example.AdminService.entities.CourseMentor;
 import com.example.AdminService.entities.Task;
 import com.example.AdminService.entities.TaskIntern;
 import com.example.AdminService.enums.TaskStatus;
+import org.mapstruct.Mapper;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;

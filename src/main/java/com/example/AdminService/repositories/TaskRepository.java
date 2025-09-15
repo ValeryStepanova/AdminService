@@ -2,6 +2,8 @@ package com.example.AdminService.repositories;
 
 import com.example.AdminService.entities.Task;
 import com.example.AdminService.enums.TaskStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +14,6 @@ import java.util.Optional;
 public interface TaskRepository extends JpaRepository<Task, Long> {
     Boolean existsByCourse_IdAndTitleAndStatusNot(Long course_id, String title, TaskStatus status);
     Optional<Task> findByIdAndStatusNot(Long id, TaskStatus status);
-    List<Task> findAllByStatusNot(TaskStatus status);
+    Page<Task> findAllByStatusNot(TaskStatus status, PageRequest pageRequest);
     List<Task> findAllByCourse_IdAndStatusNot(Long courseId, TaskStatus taskInternStatus);
 }

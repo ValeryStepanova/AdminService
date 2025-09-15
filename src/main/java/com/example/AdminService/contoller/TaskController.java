@@ -9,6 +9,8 @@ import com.example.AdminService.enums.ResponseStatus;
 import com.example.AdminService.service.impl.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +26,10 @@ public class TaskController {
 
 
     @GetMapping("/all")
-    public ResponseEntity<HttpResponse> getAll() {
-        List<TaskResponseMin> tasks = taskService.getAll();
+    public ResponseEntity<HttpResponse> getAll( @RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "10") int size) {
+
+        Page<TaskResponseMin> tasks = taskService.getAll(page,size);
 
         return ResponseEntity.ok(
             HttpResponse.builder()

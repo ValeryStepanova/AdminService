@@ -12,10 +12,13 @@ import com.example.AdminService.entities.TaskIntern;
 import com.example.AdminService.enums.*;
 import com.example.AdminService.exception.ApiException;
 import com.example.AdminService.mapper.CourseMentorMapper;
+import com.example.AdminService.mapper.TaskMapper;
 import com.example.AdminService.repositories.*;
 import com.example.AdminService.utils.CurrentUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,8 +39,10 @@ public class TaskService {
     private final ProgramExpertRepository programExpertRepository;
 
 
-    public List<TaskResponseMin> getAll() {
-        return toResponseList(taskRepository.findAllByStatusNot(TaskStatus.DELETED));
+    public Page<TaskResponseMin> getAll(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Task> pageTask = taskRepository.findAllByStatusNot(TaskStatus.DELETED, pageRequest);
+        return pageTask.map(TaskResponseMin::new);
     }
 
     public List<TaskResponseMin> getAllByCourseId(Long courseId) {
@@ -81,9 +86,9 @@ public class TaskService {
                 throw new ApiException(ResponseStatus.METHOD_NOT_ALLOWED);
 
             Task task = taskRepository.save(toEntity(request, course, TRUE));
-            CourseMentor courseMentor = courseMentorRepository.save(CourseMentorMapper.toEntity(course, currentUser));
+            // CourseMentor courseMentor = courseMentorRepository.save(CourseMentorMapper.toEntity(course, currentUser));
             // TODO: send approval request to expert to create the task
-            return toResponse(task, course, List.of(courseMentor), List.of());
+            return toResponse(task, course, List.of(/*courseMentor*/), List.of());
         }
     }
 
