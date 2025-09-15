@@ -10,6 +10,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Builder
 @Getter
 @Setter
 @Table(name = "tasks_interns", uniqueConstraints = {@UniqueConstraint(columnNames = {"task_id", "intern_id"})})

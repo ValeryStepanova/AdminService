@@ -1,8 +1,10 @@
 package com.example.AdminService.contoller;
 
 import com.example.AdminService.dto.HttpResponse;
+import com.example.AdminService.dto.response.AssignInternsResponse;
 import com.example.AdminService.dto.task.TaskResponse;
 import com.example.AdminService.service.impl.TaskInternService;
+import com.itechart.profileserviceapi.dto.UserIdsRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +20,12 @@ public class TaskInternController {
     private final TaskInternService taskInternService;
 
 
-    @PostMapping("/assign/{task-id}/{intern-id}")
+    @PostMapping("/assign/{task-id}")
     public ResponseEntity<HttpResponse> assignIntern(
         @PathVariable("task-id") Long taskId,
-        @PathVariable("intern-id") UUID internId
+        UserIdsRequest userIdsRequest
     ) {
-        TaskResponse task = taskInternService.assignIntern(taskId, internId);
+        AssignInternsResponse task = taskInternService.assignIntern(taskId, userIdsRequest);
 
         return ResponseEntity.ok(
             HttpResponse.builder()
