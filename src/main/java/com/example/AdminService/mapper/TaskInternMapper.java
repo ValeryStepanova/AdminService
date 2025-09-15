@@ -11,7 +11,6 @@ public class TaskInternMapper {
         TaskIntern taskIntern = new TaskIntern();
         taskIntern.setTask(task);
         taskIntern.setInternId(intern.getId());
-        taskIntern.setUsername(intern.getUsername());
         if (isMentor) taskIntern.setStatus(SpecialistProgramStatus.UNASSIGNED);
 
         return taskIntern;

@@ -19,6 +19,5 @@ public class InternResponse {
 
     public InternResponse(TaskIntern intern) {
         this.id = intern.getInternId();
-        this.username = intern.getUsername();
     }
 }
