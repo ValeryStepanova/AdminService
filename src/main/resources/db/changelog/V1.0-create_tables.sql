@@ -128,20 +128,18 @@ CREATE TABLE tasks
 -- Create tasks_interns table
 CREATE TABLE tasks_interns
 (
-    id               BIGSERIAL PRIMARY KEY,
-    task_id          BIGINT       NOT NULL,
-    intern_id        UUID         NOT NULL,
-    intern_full_name VARCHAR(255) NOT NULL,
-    intern_email     VARCHAR(255) NOT NULL,
-    github_link      VARCHAR(500) NOT NULL DEFAULT 'NOT SUBMITTED',
-    task_status      VARCHAR(50)  NOT NULL DEFAULT 'IN_PROGRESS',
-    status           VARCHAR(50)  NOT NULL DEFAULT 'ASSIGNED',
-    created_at       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    created_by       UUID,
-    updated_at       TIMESTAMP,
-    updated_by       UUID,
-    deleted_at       TIMESTAMP,
-    deleted_by       UUID,
+    id          BIGSERIAL PRIMARY KEY,
+    task_id     BIGINT      NOT NULL,
+    intern_id   UUID        NOT NULL,
+    github_link VARCHAR(500),
+    task_status VARCHAR(50) NOT NULL DEFAULT 'IN_PROGRESS',
+    status      VARCHAR(50) NOT NULL DEFAULT 'ASSIGNED',
+    created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by  UUID,
+    updated_at  TIMESTAMP,
+    updated_by  UUID,
+    deleted_at  TIMESTAMP,
+    deleted_by  UUID,
     FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT unq_tasks_interns_task_id_intern_id UNIQUE (task_id, intern_id)
 );

@@ -28,20 +28,17 @@ public class TaskIntern extends BaseEntity {
     @Column(name = "intern_id", nullable = false)
     private UUID internId;
 
-    @Column(name = "intern_full_name", nullable = false)
-    private String username;
 
-    @Column(name = "github_link", nullable = false, columnDefinition = "VARCHAR(500) DEFAULT 'NOT SUBMITTED'")
+    @Column(name = "github_link")
     private String githubLink;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "task_status", nullable = false, columnDefinition = "VARCHAR(50) DEFAULT 'IN_PROGRESS'")
+    @Column(name = "task_status", nullable = false)
     private TaskInternStatus taskStatus = TaskInternStatus.IN_PROGRESS;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(50) DEFAULT 'ASSIGNED'")
+    @Column(name = "status", nullable = false)
     private SpecialistProgramStatus status = SpecialistProgramStatus.ASSIGNED;
-
 
     @Override
     public void softDelete(UUID currentUserId) {
