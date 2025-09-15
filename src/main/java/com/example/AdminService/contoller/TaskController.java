@@ -41,8 +41,9 @@ public class TaskController {
     }
 
     @GetMapping("/all/by-program/{program-id}")
-    public ResponseEntity<HttpResponse> getAllByProgram(@PathVariable("program-id") Long programId) {
-        List<TaskResponseMin> tasks = taskService.getAllByCourseId(programId);
+    public ResponseEntity<HttpResponse> getAllByProgram(@RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "10") int size, @PathVariable("program-id") Long programId) {
+       Page <TaskResponseMin> tasks = taskService.getAllByCourseId(page, size, programId);
 
         return ResponseEntity.ok(
             HttpResponse.builder()
@@ -79,7 +80,7 @@ public class TaskController {
         );
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<HttpResponse> update(@PathVariable Long id, @RequestBody @Valid TaskUpdateRequest request) {
         TaskResponse taskResponse = taskService.updateById(id, request);
 

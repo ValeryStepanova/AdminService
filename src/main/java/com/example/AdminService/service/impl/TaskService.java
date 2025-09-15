@@ -45,13 +45,15 @@ public class TaskService {
         return pageTask.map(TaskResponseMin::new);
     }
 
-    public List<TaskResponseMin> getAllByCourseId(Long courseId) {
-        return toResponseList(taskRepository.findAllByCourse_IdAndStatusNot(courseId, TaskStatus.DELETED));
+    public Page<TaskResponseMin> getAllByCourseId(int page, int size, Long courseId) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Task> pageTask = taskRepository.findAllByCourse_IdAndStatusNot(pageRequest, courseId, TaskStatus.DELETED);
+        return pageTask.map(TaskResponseMin::new);
     }
 
     public TaskResponse getById(Long id) {
         Task task = taskRepository.findByIdAndStatusNot(id, TaskStatus.DELETED)
-            .orElseThrow(() -> new ApiException(ResponseStatus.TASK_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ResponseStatus.TASK_NOT_FOUND));
 
         Course course = task.getCourse();
         List<CourseMentor> mentors = courseMentorRepository.findAllByCourseId(course.getId());
@@ -63,17 +65,17 @@ public class TaskService {
     @Transactional
     public TaskResponse create(TaskRequest request) {
         Course course = courseRepository.findByIdAndStatusNot(request.courseId(), CourseStatus.DELETED)
-            .orElseThrow(() -> new ApiException(ResponseStatus.COURSE_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ResponseStatus.COURSE_NOT_FOUND));
 
         if (taskRepository.existsByCourse_IdAndTitleAndStatusNot(request.courseId(), request.title(), TaskStatus.DELETED))
             throw new ApiException(ResponseStatus.TASK_ALREADY_EXISTS);
 
         UserPrincipal currentUser = getCurrentUser();
 
-        if (currentUser.roles().contains(Role.SUPERVISOR.name())) {
+        if (currentUser.roles().contains(com.itechart.profileserviceapi.enums.Role.ROLE_SUPERVISOR.name())) {
             Task task = taskRepository.save(toEntity(request, course, FALSE));
             return toResponse(task, course, List.of(), List.of());
-        } else if (currentUser.roles().contains(Role.EXPERT.name())) {
+        } else if (currentUser.roles().contains(com.itechart.profileserviceapi.enums.Role.ROLE_EXPERT.name())) {
             // Check if expert is assigned to the program
             if (!programExpertRepository.existsByProgramAndExpertIdAndStatus(course.getProgram(), currentUser.uuid(), SpecialistProgramStatus.ASSIGNED))
                 throw new ApiException(ResponseStatus.METHOD_NOT_ALLOWED);
@@ -94,7 +96,7 @@ public class TaskService {
 
     public TaskResponse updateById(Long id, TaskUpdateRequest request) {
         Task task = taskRepository.findByIdAndStatusNot(id, TaskStatus.DELETED)
-            .orElseThrow(() -> new ApiException(ResponseStatus.TASK_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ResponseStatus.TASK_NOT_FOUND));
 
         if (taskRepository.existsByCourse_IdAndTitleAndStatusNot(task.getCourse().getId(), request.title(), TaskStatus.DELETED))
             throw new ApiException(ResponseStatus.TASK_ALREADY_EXISTS);
@@ -102,16 +104,22 @@ public class TaskService {
         UserPrincipal currentUser = getCurrentUser();
         Course course = task.getCourse();
 
-        if (currentUser.roles().contains(Role.SUPERVISOR.name())) {
-            update(request, task);
+        if (currentUser.roles().contains(com.itechart.profileserviceapi.enums.Role.ROLE_SUPERVISOR.name())) {
+            task.setTitle(request.title());
+            task.setDefinition(request.definition());
+            //update(request, task);
+            log.info("Updating task {}: title='{}', definition='{}'", task.getId(), task.getTitle(), task.getDefinition());
             taskRepository.save(task);
-        } else if (currentUser.roles().contains(Role.EXPERT.name())) {
+        } else if (currentUser.roles().contains(com.itechart.profileserviceapi.enums.Role.ROLE_EXPERT.name())) {
             // Check if expert is assigned to the program
             if (!programExpertRepository.existsByProgramAndExpertIdAndStatus(course.getProgram(), currentUser.uuid(), SpecialistProgramStatus.ASSIGNED))
                 throw new ApiException(ResponseStatus.METHOD_NOT_ALLOWED);
-
-            update(request, task);
+            task.setTitle(request.title());
+            task.setDefinition(request.definition());
+            //update(request, task);
+            log.info("Updating task {}: title='{}', definition='{}'", task.getId(), task.getTitle(), task.getDefinition());
             taskRepository.save(task);
+
         } else {
             // Check if mentor is assigned to the course
             if (!courseMentorRepository.existsByCourseAndMentorIdAndStatus(course, currentUser.uuid(), SpecialistProgramStatus.ASSIGNED))
@@ -128,16 +136,16 @@ public class TaskService {
 
     public void deleteById(Long id) {
         Task task = taskRepository.findByIdAndStatusNot(id, TaskStatus.DELETED)
-            .orElseThrow(() -> new ApiException(ResponseStatus.TASK_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ResponseStatus.TASK_NOT_FOUND));
 
         UserPrincipal currentUser = getCurrentUser();
         Course course = task.getCourse();
 
-        if (currentUser.roles().contains(Role.EXPERT.name())) {
+        if (currentUser.roles().contains(com.itechart.profileserviceapi.enums.Role.ROLE_EXPERT.name())) {
             // Check if expert is assigned to the program
             if (!programExpertRepository.existsByProgramAndExpertIdAndStatus(course.getProgram(), currentUser.uuid(), SpecialistProgramStatus.ASSIGNED))
                 throw new ApiException(ResponseStatus.METHOD_NOT_ALLOWED);
-        } else if (currentUser.roles().contains(Role.MENTOR.name())) {
+        } else if (currentUser.roles().contains(com.itechart.profileserviceapi.enums.Role.ROLE_MENTOR.name())) {
             // Check if mentor is assigned to the course
             if (!courseMentorRepository.existsByCourseAndMentorIdAndStatus(course, currentUser.uuid(), SpecialistProgramStatus.ASSIGNED))
                 throw new ApiException(ResponseStatus.METHOD_NOT_ALLOWED);

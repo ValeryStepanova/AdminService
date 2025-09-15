@@ -15,5 +15,5 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     Boolean existsByCourse_IdAndTitleAndStatusNot(Long course_id, String title, TaskStatus status);
     Optional<Task> findByIdAndStatusNot(Long id, TaskStatus status);
     Page<Task> findAllByStatusNot(TaskStatus status, PageRequest pageRequest);
-    List<Task> findAllByCourse_IdAndStatusNot(Long courseId, TaskStatus taskInternStatus);
+    Page<Task> findAllByCourse_IdAndStatusNot(PageRequest pageRequest, Long courseId, TaskStatus taskInternStatus);
 }
