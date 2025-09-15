@@ -55,9 +55,20 @@ public class TaskInternService {
                 || currentUser.roles().contains(com.itechart.profileserviceapi.enums.Role.ROLE_EXPERT.name())) {
             List<UserDto> interns = Optional.of(userClient.findAllByIds(userIdsRequest).getBody())
                     .orElseThrow(() -> new InternNotFoundException("Such interns are not found"));
+            interns.forEach(userDto -> {
+                log.info("User {} roles: {}", userDto.getUuid(), userDto.getRoles());
+                if (!userDto.getRoles().contains(com.itechart.profileserviceapi.enums.Role.ROLE_INTERN)) {
+                    log.warn("User {} skipped — not an intern. Roles: {}", userDto.getUuid(), userDto.getRoles());
+                }
+            });
+
             var internIds = interns.stream()
                     .filter(userDto -> userDto.getRoles().contains(com.itechart.profileserviceapi.enums.Role.ROLE_INTERN))
-                    .map(UserDto::getUuid).toList();
+                    .map(UserDto::getUuid)
+                    .toList();
+            log.info("Interns to assign: {}", internIds);
+            interns.forEach(userDto -> log.info("User {} roles: {}", userDto.getUuid(), userDto.getRoles()));
+
             List<TaskIntern> taskInterns = internIds.stream().map(
                     internId -> TaskIntern.builder()
                             .task(task)
@@ -66,6 +77,8 @@ public class TaskInternService {
                             .build()
             ).toList();
             taskInternRepository.saveAll(taskInterns);
+            log.info("Saved {} TaskInterns", taskInterns.size());
+
 
         }
         List<UUID> internIds = taskInternRepository.findAllByTaskId(taskId)
