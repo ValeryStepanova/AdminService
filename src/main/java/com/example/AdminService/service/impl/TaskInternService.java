@@ -31,6 +31,7 @@ import java.util.UUID;
 
 import static com.example.AdminService.enums.SpecialistProgramStatus.ASSIGNED;
 import static com.example.AdminService.enums.SpecialistProgramStatus.UNASSIGNED;
+import static com.example.AdminService.enums.TaskInternStatus.IN_PROGRESS;
 import static com.example.AdminService.mapper.TaskInternMapper.toEntity;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -73,6 +74,7 @@ public class TaskInternService {
                     internId -> TaskIntern.builder()
                             .task(task)
                             .internId(internId)
+                            .taskStatus(IN_PROGRESS)
                             .status(ASSIGNED)
                             .build()
             ).toList();
@@ -87,7 +89,6 @@ public class TaskInternService {
                 .toList();
         return new AssignInternsResponse(taskId, task.getTitle(), internIds);
     }
-
 
 //    @Transactional
 //    public TaskResponse assignIntern(Long taskId, UUID internId) {
@@ -129,7 +130,7 @@ public class TaskInternService {
         UserPrincipal currentUser = getCurrentUser();
         Course course = task.getCourse();
 
-        if (currentUser.roles().contains(Role.SUPERVISOR.name())) {
+        if (currentUser.roles().contains(com.itechart.profileserviceapi.enums.Role.ROLE_SUPERVISOR.name())) {
             TaskIntern taskIntern = taskInternRepository.findByTask_IdAndInternId(task.getId(), internId)
                     .orElseThrow(() -> new ApiException(ResponseStatus.SPECIALIST_NOT_FOUND));
 
@@ -138,7 +139,7 @@ public class TaskInternService {
 
             taskIntern.setStatus(UNASSIGNED);
             taskInternRepository.saveAndFlush(taskIntern);
-        } else if (currentUser.roles().contains(Role.EXPERT.name())) {
+        } else if (currentUser.roles().contains(com.itechart.profileserviceapi.enums.Role.ROLE_EXPERT.name())) {
             // Check if expert is assigned to the program
             if (!programExpertRepository.existsByProgramAndExpertIdAndStatus(course.getProgram(), currentUser.uuid(), ASSIGNED))
                 throw new ApiException(ResponseStatus.METHOD_NOT_ALLOWED);
@@ -171,20 +172,20 @@ public class TaskInternService {
         return TaskMapper.toResponse(task, course, mentors, interns);
     }
 
-    private void assign(Task task, UUID internId) {
-        Optional<TaskIntern> optionalTaskIntern = taskInternRepository.findByTask_IdAndInternId(task.getId(), internId);
-        if (optionalTaskIntern.isEmpty()) {
-            UserResponse intern = getIntern(internId);
-            taskInternRepository.saveAndFlush(toEntity(task, intern, FALSE));
-        } else {
-            TaskIntern taskIntern = optionalTaskIntern.get();
-            if (taskIntern.getStatus().equals(ASSIGNED))
-                throw new ApiException(ResponseStatus.SPECIALIST_ALREADY_ASSIGNED);
-
-            taskIntern.setStatus(ASSIGNED);
-            taskInternRepository.saveAndFlush(taskIntern);
-        }
-    }
+//    private void assign(Task task, UUID internId) {
+//        Optional<TaskIntern> optionalTaskIntern = taskInternRepository.findByTask_IdAndInternId(task.getId(), internId);
+//        if (optionalTaskIntern.isEmpty()) {
+//            UserResponse intern = getIntern(internId);
+//            taskInternRepository.saveAndFlush(toEntity(task, intern, FALSE));
+//        } else {
+//            TaskIntern taskIntern = optionalTaskIntern.get();
+//            if (taskIntern.getStatus().equals(ASSIGNED))
+//                throw new ApiException(ResponseStatus.SPECIALIST_ALREADY_ASSIGNED);
+//
+//            taskIntern.setStatus(ASSIGNED);
+//            taskInternRepository.saveAndFlush(taskIntern);
+//        }
+//    }
 
     private UserPrincipal getCurrentUser() {
         UserPrincipal currentUser = CurrentUserService.getCurrentUser();
