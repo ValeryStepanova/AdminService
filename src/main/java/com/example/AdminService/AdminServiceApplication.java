@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing
 @EnableFeignClients(basePackages = {"com.itechart.profileserviceapi.api", "com.example.AdminService.client"})
 public class AdminServiceApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(AdminServiceApplication.class, args);
 	}
