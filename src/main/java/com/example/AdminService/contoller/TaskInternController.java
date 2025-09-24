@@ -4,6 +4,7 @@ import com.example.AdminService.dto.HttpResponse;
 import com.example.AdminService.dto.response.AssignInternsResponse;
 import com.example.AdminService.dto.task.TaskResponse;
 import com.example.AdminService.service.impl.TaskInternService;
+import com.itechart.admin_service_api.dto.TaskInternDto;
 import com.itechart.profileserviceapi.dto.UserIdsRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -50,5 +51,11 @@ public class TaskInternController {
                 .data(Map.of("task", task))
                 .build()
         );
+    }
+
+    @GetMapping("/{taskInternId}")
+    ResponseEntity<TaskInternDto> getTaskInternById(@PathVariable Long taskInternId){
+        return ResponseEntity.ok(taskInternService.getTaskInternById(taskInternId));
+
     }
 }

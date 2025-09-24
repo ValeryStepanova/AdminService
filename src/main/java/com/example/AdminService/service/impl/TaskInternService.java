@@ -11,12 +11,16 @@ import com.example.AdminService.enums.Role;
 import com.example.AdminService.enums.TaskStatus;
 import com.example.AdminService.exception.ApiException;
 import com.example.AdminService.exception.InternNotFoundException;
+import com.example.AdminService.exception.TaskInternNotFound;
+import com.example.AdminService.mapper.TaskInternMapper;
+import com.example.AdminService.mapper.TaskInternMapperMapStruct;
 import com.example.AdminService.mapper.TaskMapper;
 import com.example.AdminService.repositories.CourseMentorRepository;
 import com.example.AdminService.repositories.ProgramExpertRepository;
 import com.example.AdminService.repositories.TaskInternRepository;
 import com.example.AdminService.repositories.TaskRepository;
 import com.example.AdminService.utils.CurrentUserService;
+import com.itechart.admin_service_api.dto.TaskInternDto;
 import com.itechart.profileserviceapi.api.UserClient;
 import com.itechart.profileserviceapi.dto.UserDto;
 import com.itechart.profileserviceapi.dto.UserIdsRequest;
@@ -195,6 +199,11 @@ public class TaskInternService {
         }
 
         return currentUser;
+    }
+
+    public TaskInternDto getTaskInternById(Long taskInternId){
+       return TaskInternMapperMapStruct.INSTANCE.toDto(taskInternRepository.findById(taskInternId)
+                .orElseThrow(() -> new TaskInternNotFound("Such taskInter entity are not found")));
     }
 
     private UserResponse getIntern(UUID internId) {

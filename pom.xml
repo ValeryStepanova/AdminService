@@ -46,6 +46,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.itechart</groupId>
+            <artifactId>admin-service-api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>com.itechArt</groupId>
             <artifactId>profile-service-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
