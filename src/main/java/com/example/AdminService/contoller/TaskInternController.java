@@ -3,10 +3,14 @@ package com.example.AdminService.contoller;
 import com.example.AdminService.dto.HttpResponse;
 import com.example.AdminService.dto.response.AssignInternsResponse;
 import com.example.AdminService.dto.task.TaskResponse;
+import com.example.AdminService.enums.ResponseStatus;
 import com.example.AdminService.service.impl.TaskInternService;
 import com.itechart.admin_service_api.dto.TaskInternDto;
+import com.itechart.admin_service_api.dto.UpdateTaskLinkDto;
+import com.itechart.admin_service_api.dto.request.UpdateLinkRequest;
 import com.itechart.profileserviceapi.dto.UserIdsRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,39 +21,48 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/admin/task-intern")
 @RequiredArgsConstructor
+@Slf4j
 public class TaskInternController {
     private final TaskInternService taskInternService;
 
 
     @PostMapping("/assign/{task-id}")
     public ResponseEntity<HttpResponse> assignIntern(
-        @PathVariable("task-id") Long taskId,
-       @RequestBody UserIdsRequest userIdsRequest
+            @PathVariable("task-id") Long taskId,
+            @RequestBody UserIdsRequest userIdsRequest
     ) {
         AssignInternsResponse task = taskInternService.assignIntern(taskId, userIdsRequest);
 
         return ResponseEntity.ok(
-            HttpResponse.builder()
-                .statusCode(HttpStatus.OK.value())
-                .description(HttpStatus.OK.name())
-                .data(Map.of("task", task))
-                .build()
+                HttpResponse.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .description(HttpStatus.OK.name())
+                        .data(Map.of("task", task))
+                        .build()
         );
     }
 
     @PutMapping("/unassign/{task-id}/{intern-id}")
     public ResponseEntity<HttpResponse> unassignIntern(
-        @PathVariable("task-id") Long taskId,
-        @PathVariable("intern-id") UUID internId
+            @PathVariable("task-id") Long taskId,
+            @PathVariable("intern-id") UUID internId
     ) {
         TaskResponse task = taskInternService.unassignIntern(taskId, internId);
 
         return ResponseEntity.ok(
-            HttpResponse.builder()
-                .statusCode(HttpStatus.OK.value())
-                .description(HttpStatus.OK.name())
-                .data(Map.of("task", task))
-                .build()
+                HttpResponse.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .description(HttpStatus.OK.name())
+                        .data(Map.of("task", task))
+                        .build()
+        );
+    }
+
+    @PutMapping("/{task-id}")
+    public ResponseEntity<UpdateTaskLinkDto> updateTaskLink(@PathVariable(name = "task-id") Long taskId, @RequestBody UpdateLinkRequest linkRequest) {
+        UpdateTaskLinkDto response = taskInternService.updateTaskLink(taskId, linkRequest);
+        return ResponseEntity.ok(
+                response
         );
     }
 

@@ -21,6 +21,8 @@ import com.example.AdminService.repositories.TaskInternRepository;
 import com.example.AdminService.repositories.TaskRepository;
 import com.example.AdminService.utils.CurrentUserService;
 import com.itechart.admin_service_api.dto.TaskInternDto;
+import com.itechart.admin_service_api.dto.UpdateTaskLinkDto;
+import com.itechart.admin_service_api.dto.request.UpdateLinkRequest;
 import com.itechart.profileserviceapi.api.UserClient;
 import com.itechart.profileserviceapi.dto.UserDto;
 import com.itechart.profileserviceapi.dto.UserIdsRequest;
@@ -212,5 +214,18 @@ public class TaskInternService {
             throw new ApiException(ResponseStatus.ROLE_MISMATCH_EXCEPTION);
 
         return intern;
+    }
+
+    public UpdateTaskLinkDto updateTaskLink(Long taskId, UpdateLinkRequest linkRequest) {
+        TaskIntern taskIntern = taskInternRepository.findById(taskId).orElseThrow(
+                () -> new ApiException(ResponseStatus.TASK_NOT_FOUND)
+        );
+        taskIntern.setGithubLink(linkRequest.gitHubLink());
+        taskInternRepository.saveAndFlush(taskIntern);
+        log.info("task id updated successfully");
+        return new UpdateTaskLinkDto(
+                taskId,
+                taskIntern.getGithubLink()
+        );
     }
 }
